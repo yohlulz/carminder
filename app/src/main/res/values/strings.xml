@@ -9,7 +9,7 @@
     <string name="navigation_drawer_open">Open navigation drawer</string>
     <string name="navigation_drawer_close">Close navigation drawer</string>
 
-    <string name="action_example">Example action</string>
+    <string name="validate_status">Validate status</string>
 
     <string name="action_settings">Settings</string>
 
@@ -30,5 +30,6 @@
         <item>@string/pref_key_theme_light</item>
         <item>@string/pref_key_theme_dark</item>
     </string-array>
+    <string name="title_activity_status">Check status</string>
 
 </resources>
