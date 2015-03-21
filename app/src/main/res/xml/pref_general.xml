@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width = "match_parent"
+    android:layout_height="match_parent">
+
+    <!--
+    <EditTextPreference
+        android:title="@string/pref_name_theme"
+        android:key="@string/pref_key_theme"
+        android:defaultValue="@string/pref_default_theme"
+        android:inputType="text"
+        android:singleLine="true"/>-->
+
+    <ListPreference
+        android:title="@string/pref_name_theme"
+        android:key="@string/pref_key_theme"
+        android:entries="@array/pref_names_theme"
+        android:entryValues="@array/pref_keys_theme"
+        android:defaultValue="@string/pref_default_theme"/>
+
+</PreferenceScreen>
