@@ -1,9 +1,12 @@
 package to.uk.carminder.app;
 
+import android.app.SearchManager;
+import android.content.Intent;
 import android.support.v7.app.ActionBarActivity;
 import android.support.v7.app.ActionBar;
 import android.support.v4.app.Fragment;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -11,6 +14,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.os.Build;
 import android.widget.ListView;
+import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -21,6 +25,7 @@ import to.uk.carminder.app.data.adapter.EventStatusAdapter;
 
 
 public class StatusActivity extends ActionBarActivity {
+    public static final String LOG_TAG = StatusActivity.class.getSimpleName();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -31,8 +36,23 @@ public class StatusActivity extends ActionBarActivity {
                     .add(R.id.container, new PlaceholderFragment())
                     .commit();
         }
+        handleIntent(getIntent());
     }
 
+    @Override
+    protected void onNewIntent(Intent intent) {
+        setIntent(intent);
+        handleIntent(intent);
+    }
+
+    private void handleIntent(Intent intent) {
+        if (Intent.ACTION_SEARCH.equals(intent.getAction())) {
+            final String query = intent.getStringExtra(SearchManager.QUERY);
+            Log.i(LOG_TAG, "Search " + query);
+            Toast.makeText(this, query, Toast.LENGTH_LONG).show();
+            //TODO perform search and display results
+        }
+    }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -68,7 +88,7 @@ public class StatusActivity extends ActionBarActivity {
                                  Bundle savedInstanceState) {
             View rootView = inflater.inflate(R.layout.fragment_status, container, false);
 
-            final EventStatusAdapter eventsAdapter = new EventStatusAdapter(getActivity(), new ArrayList<CarEvent>(Arrays.asList(
+            final EventStatusAdapter eventsAdapter = new EventStatusAdapter(getActivity(), new ArrayList<>(Arrays.asList(
                     new CarEvent(new Date(), "test", "test"),
                     new CarEvent(new Date(), "test1", "test"))));
             final ListView eventsView = (ListView) rootView.findViewById(R.id.listView_event);

@@ -7,25 +7,6 @@
     tools:context="to.uk.carminder.app.StatusActivity$PlaceholderFragment"
     android:orientation="vertical">
 
-    <EditText
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:id="@+id/editText"
-        android:gravity="center_horizontal"
-        android:text="car plate"
-        android:textAppearance="?android:textAppearanceLarge"
-        android:layout_marginBottom="@dimen/activity_vertical_margin"
-        android:selectAllOnFocus="true"
-        android:layout_marginLeft="5dp"
-        android:layout_marginRight="5dp" />
-
-    <Button
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Check status"
-        android:id="@+id/button"
-        android:layout_gravity="center_horizontal" />
-
     <ListView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"

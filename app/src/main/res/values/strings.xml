@@ -31,5 +31,6 @@
         <item>@string/pref_key_theme_dark</item>
     </string-array>
     <string name="title_activity_status">Check status</string>
+    <string name="search_hint">Car plate, eg: B00ABC</string>
 
 </resources>

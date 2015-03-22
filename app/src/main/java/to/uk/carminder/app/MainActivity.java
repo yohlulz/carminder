@@ -1,12 +1,18 @@
 package to.uk.carminder.app;
 
 import android.app.Activity;
+import android.app.SearchManager;
+import android.content.ComponentName;
+import android.content.Context;
 import android.content.Intent;
+import android.support.v4.view.MenuItemCompat;
 import android.support.v7.app.ActionBarActivity;
 import android.support.v7.app.ActionBar;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.os.Bundle;
+import android.support.v7.widget.SearchView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -79,8 +85,17 @@ public class MainActivity extends ActionBarActivity implements NavigationDrawerF
             // decide what to show in the action bar.
             getMenuInflater().inflate(R.menu.main, menu);
             restoreActionBar();
+
+            // Get the SearchView and set the searchable configuration
+            SearchManager searchManager = (SearchManager) getSystemService(Context.SEARCH_SERVICE);
+            SearchView searchView = (SearchView) MenuItemCompat.getActionView(menu.findItem(R.id.action_status));
+            searchView.setSearchableInfo(searchManager.getSearchableInfo(new ComponentName(this, StatusActivity.class)));
+            searchView.setIconifiedByDefault(true);
+            searchView.setQueryHint(getString(R.string.search_hint));
+
             return true;
         }
+
         return super.onCreateOptionsMenu(menu);
     }
 
@@ -92,7 +107,8 @@ public class MainActivity extends ActionBarActivity implements NavigationDrawerF
                 break;
 
             case R.id.action_status:
-                startActivity(new Intent(this, StatusActivity.class));
+                Log.i(LOG_TAG, "search pressed");
+                onSearchRequested();
                 break;
 
             default:
