@@ -1,6 +1,8 @@
 package to.uk.carminder.app;
 
 import android.app.SearchManager;
+import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.Intent;
 import android.support.v7.app.ActionBarActivity;
 import android.support.v7.app.ActionBar;
@@ -22,6 +24,7 @@ import java.util.Date;
 
 import to.uk.carminder.app.data.CarEvent;
 import to.uk.carminder.app.data.adapter.EventStatusAdapter;
+import to.uk.carminder.app.service.CheckStatusService;
 
 
 public class StatusActivity extends ActionBarActivity {
@@ -79,6 +82,7 @@ public class StatusActivity extends ActionBarActivity {
      * A placeholder fragment containing a simple view.
      */
     public static class PlaceholderFragment extends Fragment {
+        private EventStatusAdapter adapter;
 
         public PlaceholderFragment() {
         }
@@ -88,12 +92,25 @@ public class StatusActivity extends ActionBarActivity {
                                  Bundle savedInstanceState) {
             View rootView = inflater.inflate(R.layout.fragment_status, container, false);
 
-            final EventStatusAdapter eventsAdapter = new EventStatusAdapter(getActivity(), new ArrayList<>(Arrays.asList(
+            adapter = new EventStatusAdapter(getActivity(), new ArrayList<>(Arrays.asList(
                     new CarEvent(new Date(), "test", "test"),
                     new CarEvent(new Date(), "test1", "test"))));
             final ListView eventsView = (ListView) rootView.findViewById(R.id.listView_event);
-            eventsView.setAdapter(eventsAdapter);
+            eventsView.setAdapter(adapter);
             return rootView;
+        }
+
+        private class StatusReceiver extends BroadcastReceiver {
+
+            @Override
+            public void onReceive(Context context, Intent intent) {
+                //TODO review this and implement fromString for CarEvent and Car
+                final CarEvent event = CarEvent.fromString(intent.getStringExtra(CheckStatusService.FIELD_DATA));
+                if (event != null) {
+                    adapter.add(event);
+
+                }
+            }
         }
     }
 }
