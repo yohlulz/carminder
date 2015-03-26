@@ -13,6 +13,8 @@ import java.util.logging.Logger;
 public class Utility {
     private static final String LOG_TAG = Utility.class.getSimpleName();
 
+    public static final String EMPTY_STRING = "";
+
     private Utility() {
     }
 

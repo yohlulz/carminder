@@ -41,6 +41,7 @@ public class CheckStatusService extends IntentService {
 
     @Override
     protected void onHandleIntent(Intent intent) {
+        Log.i(LOG_TAG, "Received request:" + intent);
         TaskBuilder.newInstance()
                    .mainURL(intent.getStringExtra(FIELD_MAIN_API_URL))
                    .backupURL(intent.getStringExtra(FIELD_BACKUP_API_URL))
@@ -151,6 +152,7 @@ public class CheckStatusService extends IntentService {
 
             } catch (IOException ex) {
                 Log.w(LOG_TAG, ex.getMessage(), ex);
+                //TODO show some message if no internet connection or server down
 
             } finally { // close any open streams
                 try {

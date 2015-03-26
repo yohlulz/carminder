@@ -15,8 +15,8 @@ import java.util.Date;
 
 import to.uk.carminder.app.Utility;
 
-public class CarEvent {
-    private static final String LOG_TAG = CarEvent.class.getSimpleName();
+public class StatusEvent {
+    private static final String LOG_TAG = StatusEvent.class.getSimpleName();
     private static final ThreadLocal<DateFormat> DAY_FORMAT = new ThreadLocal<DateFormat>() {
         @Override
         protected DateFormat initialValue() {
@@ -41,16 +41,24 @@ public class CarEvent {
     private static final String FIELD_END_DATE = "endDate";
     private static final String FIELD_START_DATE = "startDate";
 
-    private final Car car;
+    private final Date startDate;
     private final Date expireDate;
     private final String name;
     private final String description;
 
-    private CarEvent(Car car,Date expireDate, String name, String description) {
-        this.car = car;
+    private StatusEvent(Date startDate, Date expireDate, String name, String description) {
+        this.startDate = startDate;
         this.expireDate = expireDate;
         this.name = name;
         this.description = description;
+    }
+
+    public String getStartDay() {
+        return (startDate != null) ? DAY_FORMAT.get().format(startDate) : Utility.EMPTY_STRING;
+    }
+
+    public String getStartMonth() {
+        return (startDate != null) ? MONTH_FORMAT.get().format(startDate) : Utility.EMPTY_STRING;
     }
 
     public String getExpireDay() {
@@ -69,21 +77,23 @@ public class CarEvent {
         return description;
     }
 
-    public static Collection<CarEvent> fromJSON(String data) {
+    public static Collection<StatusEvent> fromJSON(String data) {
         if (Utility.isStringNullOrEmpty(data)) {
             return Collections.emptyList();
         }
 
         try {
             final JSONObject event = new JSONObject(data);
-            final Car car = new Car(event.getString(FIELD_PLATE));
-            final Collection<CarEvent> events = new ArrayList<>();
-            events.add(new CarEvent(car, DATE_FORMAT.get().parse(event.getString(FIELD_START_DATE)), FIELD_MTPL, event.getString(FIELD_MTPL)));
-            events.add(new CarEvent(car, DATE_FORMAT.get().parse(event.getString(FIELD_END_DATE)), FIELD_MTPL, event.getString(FIELD_MTPL)));
+            final Collection<StatusEvent> events = new ArrayList<>();
+            events.add(new StatusEvent(DATE_FORMAT.get().parse(event.getString(FIELD_START_DATE)),
+                                       DATE_FORMAT.get().parse(event.getString(FIELD_END_DATE)),
+                                       event.getString(FIELD_PLATE),
+                                       event.getString(FIELD_MTPL)));
             return events;
 
         } catch (JSONException | ParseException ex) {
             Log.w(LOG_TAG, ex.getMessage(), ex);
+            //TODO return empty status event
         }
 
         return Collections.emptyList();
