@@ -5,23 +5,22 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.provider.SearchRecentSuggestions;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.app.ActionBarActivity;
 import android.support.v4.app.Fragment;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ListView;
-import android.widget.Toast;
 
 import java.util.ArrayList;
 
-import to.uk.carminder.app.data.CarEvent;
-import to.uk.carminder.app.data.StatusEvent;
+import to.uk.carminder.app.data.EventSuggestionProvider;
+import to.uk.carminder.app.service.StatusEvent;
 import to.uk.carminder.app.data.adapter.StatusEventAdapter;
 import to.uk.carminder.app.service.CheckStatusService;
 
@@ -49,10 +48,12 @@ public class StatusActivity extends ActionBarActivity {
 
     private void handleIntent(Intent intent) {
         if (Intent.ACTION_SEARCH.equals(intent.getAction())) {
-            final String query = intent.getStringExtra(SearchManager.QUERY);
-
+            if (!Utility.isNetworkConnected(this)) {
+                Utility.notifyUser(this, "Please connect to internet and retry !");
+                return;
+            }
             startService(CheckStatusService.IntentBuilder.newInstance()
-                                                         .carPlate(query)
+                                                         .carPlate(intent.getStringExtra(SearchManager.QUERY))
                                                          .replySubject(CheckStatusService.ACTION_ON_DEMAND)
                                                          .build(this));
         }
@@ -71,6 +72,10 @@ public class StatusActivity extends ActionBarActivity {
                 startActivity(new Intent(this, SettingsActivity.class));
                 break;
 
+            case R.id.action_clear_history:
+                Utility.clearSearchHistory(this);
+                break;
+
             default:
                 return super.onOptionsItemSelected(item);
         }
@@ -80,6 +85,8 @@ public class StatusActivity extends ActionBarActivity {
     public static class PlaceholderFragment extends Fragment {
         private StatusEventAdapter adapter;
         private StatusReceiver receiver;
+        private SearchRecentSuggestions suggestions;
+
 
         public PlaceholderFragment() {
         }
@@ -89,6 +96,7 @@ public class StatusActivity extends ActionBarActivity {
                                  Bundle savedInstanceState) {
             View rootView = inflater.inflate(R.layout.fragment_status, container, false);
 
+            suggestions = new SearchRecentSuggestions(getActivity(), EventSuggestionProvider.AUTHORITY, EventSuggestionProvider.MODE);
             adapter = new StatusEventAdapter(getActivity(), new ArrayList<StatusEvent>());
             final ListView eventsView = (ListView) rootView.findViewById(R.id.listView_event);
             eventsView.setAdapter(adapter);
@@ -120,8 +128,17 @@ public class StatusActivity extends ActionBarActivity {
 
             @Override
             public void onReceive(Context context, Intent intent) {
-                Log.i(LOG_TAG, "Received intent " + intent);
-                adapter.addAll(StatusEvent.fromJSON(intent.getStringExtra(CheckStatusService.FIELD_DATA)));
+                final String data = intent.getStringExtra(CheckStatusService.FIELD_DATA);
+                if (Utility.isStringNullOrEmpty(data)) {
+                    Utility.notifyUser(getActivity(), "The server could be down, please try again later !");
+                    return;
+                }
+                for (StatusEvent statusEvent : StatusEvent.fromJSON(data)) {
+                    if (suggestions != null && !Utility.isStringNullOrEmpty(statusEvent.getStartDay())) {
+                        suggestions.saveRecentQuery(statusEvent.getName(), null);
+                    }
+                    adapter.add(statusEvent);
+                }
             }
         }
     }

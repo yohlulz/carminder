@@ -20,16 +20,14 @@ public class SettingsActivity extends PreferenceActivity implements Preference.O
         addPreferencesFromResource(R.xml.pref_general);
 
         // For all preferences, attach an OnPreferenceChangeListener so the UI summary can be updated when the preference changes.
-        bindPreferenceSummaryToValue(findPreference(getString(R.string.pref_key_theme)));
-        //TODO add preferences
-
+        bindPreferenceSummaryToValue(findPreference(getString(R.string.pref_key_days)));
         getActionBar().setDisplayHomeAsUpEnabled(true);
     }
 
     private void bindPreferenceSummaryToValue(Preference preference) {
         // Set the listener to watch for value changes.
         preference.setOnPreferenceChangeListener(this);
-        onPreferenceChange(preference, PreferenceManager.getDefaultSharedPreferences(preference.getContext()).getString(preference.getKey(), ""));
+        onPreferenceChange(preference, PreferenceManager.getDefaultSharedPreferences(preference.getContext()).getString(preference.getKey(), Utility.EMPTY_STRING));
     }
 
     @Override

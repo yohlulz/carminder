@@ -12,7 +12,7 @@ import android.widget.TextView;
 import java.util.List;
 
 import to.uk.carminder.app.R;
-import to.uk.carminder.app.data.StatusEvent;
+import to.uk.carminder.app.service.StatusEvent;
 
 public class StatusEventAdapter extends ArrayAdapter<StatusEvent> {
 
@@ -34,8 +34,6 @@ public class StatusEventAdapter extends ArrayAdapter<StatusEvent> {
             holder.event_end_day = (TextView) convertView.findViewById(R.id.list_item_end_day);
             holder.event_end_month = (TextView) convertView.findViewById(R.id.list_item_end_month);
             holder.event_description = (TextView) convertView.findViewById(R.id.list_item_event_description);
-            holder.event_alarm = (ImageView) convertView.findViewById(R.id.list_item_event_alarm);
-            holder.event_calendar = (ImageView) convertView.findViewById(R.id.list_item_event_calendar);
             convertView.setTag(holder);
 
         } else {
@@ -48,8 +46,6 @@ public class StatusEventAdapter extends ArrayAdapter<StatusEvent> {
         holder.event_start_month.setText(existentItem.getStartMonth());
         holder.event_end_day.setText(existentItem.getExpireDay());
         holder.event_end_month.setText(existentItem.getExpireMonth());
-        holder.event_calendar.setImageResource(R.drawable.ic_calendar);
-        holder.event_alarm.setImageResource(R.drawable.ic_alarm);
 
         return convertView;
     }
@@ -61,7 +57,5 @@ public class StatusEventAdapter extends ArrayAdapter<StatusEvent> {
         TextView event_end_day;
         TextView event_end_month;
         TextView event_description;
-        ImageView event_alarm;
-        ImageView event_calendar;
     }
 }

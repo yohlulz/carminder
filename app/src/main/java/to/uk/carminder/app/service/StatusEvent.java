@@ -1,4 +1,4 @@
-package to.uk.carminder.app.data;
+package to.uk.carminder.app.service;
 
 import android.util.Log;
 
@@ -6,7 +6,6 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.text.DateFormat;
-import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -85,15 +84,14 @@ public class StatusEvent {
         try {
             final JSONObject event = new JSONObject(data);
             final Collection<StatusEvent> events = new ArrayList<>();
-            events.add(new StatusEvent(DATE_FORMAT.get().parse(event.getString(FIELD_START_DATE)),
-                                       DATE_FORMAT.get().parse(event.getString(FIELD_END_DATE)),
+            events.add(new StatusEvent(Utility.parse(DATE_FORMAT.get(), event.getString(FIELD_START_DATE), null),
+                                       Utility.parse(DATE_FORMAT.get(), event.getString(FIELD_END_DATE), null),
                                        event.getString(FIELD_PLATE),
                                        event.getString(FIELD_MTPL)));
             return events;
 
-        } catch (JSONException | ParseException ex) {
+        } catch (JSONException ex) {
             Log.w(LOG_TAG, ex.getMessage(), ex);
-            //TODO return empty status event
         }
 
         return Collections.emptyList();

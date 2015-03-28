@@ -152,7 +152,6 @@ public class CheckStatusService extends IntentService {
 
             } catch (IOException ex) {
                 Log.w(LOG_TAG, ex.getMessage(), ex);
-                //TODO show some message if no internet connection or server down
 
             } finally { // close any open streams
                 try {

@@ -4,8 +4,8 @@
     android:layout_height="wrap_content">
 
     <LinearLayout
-        android:orientation="vertical"
-        android:layout_width="50dp"
+        android:orientation="horizontal"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:gravity="center"
         android:paddingTop="2dp"
@@ -15,46 +15,62 @@
         android:measureWithLargestChild="false"
         android:nestedScrollingEnabled="false">
 
-        <TextView
+        <LinearLayout
+            android:orientation="vertical"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="16"
-            android:textAppearance="?android:textAppearanceLarge"
-            android:id="@+id/list_item_start_day"
-            android:layout_marginBottom="-5dp" />
+            android:paddingLeft="8dp">
 
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Mar"
-            android:id="@+id/list_item_start_month"
-            android:singleLine="false"
-            android:phoneNumber="false"
-            android:textAppearance="?android:textAppearanceSmall" />
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="16"
+                android:textAppearance="?android:textAppearanceLarge"
+                android:id="@+id/list_item_start_day"
+                android:layout_marginBottom="-5dp" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Mar"
+                android:id="@+id/list_item_start_month"
+                android:singleLine="false"
+                android:phoneNumber="false"
+                android:textAppearance="?android:textAppearanceSmall" />
+
+        </LinearLayout>
 
         <ImageView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:id="@+id/imageView"
-            android:src="@android:drawable/arrow_down_float"
-            android:layout_marginTop="8dp"
-            android:layout_marginBottom="8dp" />
+            android:src="@android:drawable/ic_media_play"
+            android:layout_marginLeft="6dp"
+            android:layout_marginRight="6dp" />
 
-        <TextView
+        <LinearLayout
+            android:orientation="vertical"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="18"
-            android:id="@+id/list_item_end_day"
-            android:textAppearance="?android:textAppearanceLarge"
-            android:layout_marginBottom="-5dp" />
+            android:paddingRight="8dp">
 
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Dec"
-            android:id="@+id/list_item_end_month"
-            android:singleLine="false"
-            android:textAppearance="@android:style/TextAppearance.DeviceDefault.Small" />
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="18"
+                android:id="@+id/list_item_end_day"
+                android:textAppearance="?android:textAppearanceLarge"
+                android:layout_marginBottom="-5dp" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Dec"
+                android:id="@+id/list_item_end_month"
+                android:singleLine="false"
+                android:textAppearance="@android:style/TextAppearance.DeviceDefault.Small" />
+        </LinearLayout>
+
     </LinearLayout>
 
     <View

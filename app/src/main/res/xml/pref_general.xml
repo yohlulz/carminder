@@ -3,19 +3,18 @@
     android:layout_width = "match_parent"
     android:layout_height="match_parent">
 
-    <!--
-    <EditTextPreference
-        android:title="@string/pref_name_theme"
-        android:key="@string/pref_key_theme"
-        android:defaultValue="@string/pref_default_theme"
-        android:inputType="text"
-        android:singleLine="true"/>-->
+    <CheckBoxPreference
+        android:title="@string/pref_title_calendar_events"
+        android:key="@string/pref_key_calendar_events"
+        android:summaryOff="@string/pref_summary_off_calendar_events"
+        android:summaryOn="@string/pref_summary_on_calendar_events"
+        android:defaultValue="@string/pref_default_calendar_events" />
 
-    <ListPreference
-        android:title="@string/pref_name_theme"
-        android:key="@string/pref_key_theme"
-        android:entries="@array/pref_names_theme"
-        android:entryValues="@array/pref_keys_theme"
-        android:defaultValue="@string/pref_default_theme"/>
+    <EditTextPreference
+        android:title="@string/pref_title_days"
+        android:key="@string/pref_key_days"
+        android:defaultValue="@string/pref_default_days"
+        android:inputType="number"
+        android:singleLine="true"/>
 
 </PreferenceScreen>

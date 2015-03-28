@@ -91,7 +91,6 @@ public class MainActivity extends ActionBarActivity implements NavigationDrawerF
             SearchView searchView = (SearchView) MenuItemCompat.getActionView(menu.findItem(R.id.action_status));
             searchView.setSearchableInfo(searchManager.getSearchableInfo(new ComponentName(this, StatusActivity.class)));
             searchView.setIconifiedByDefault(true);
-            searchView.setQueryHint(getString(R.string.search_hint));
 
             return true;
         }
@@ -109,6 +108,10 @@ public class MainActivity extends ActionBarActivity implements NavigationDrawerF
             case R.id.action_status:
                 Log.i(LOG_TAG, "search pressed");
                 onSearchRequested();
+                break;
+
+            case R.id.action_clear_history:
+                Utility.clearSearchHistory(this);
                 break;
 
             default:
