@@ -29,4 +29,12 @@
     <string name="title_activity_status">Check status</string>
     <string name="search_hint">Car plate, eg: CJ00ABC</string>
 
+    <!-- provider -->
+    <string name="content_authority">uk.to.carminder.app</string>
+    <string name="search_authority">"uk.to.carminder.app.SearchProvider"</string>
+
+    <!-- messages -->
+    <string name="message_no_internet_connection">Internet unavailable</string>
+    <string name="message_connect_to_internet">Please connect to Internet and retry</string>
+
 </resources>

@@ -13,7 +13,8 @@
         android:layout_gravity="center_vertical"
         android:baselineAligned="false"
         android:measureWithLargestChild="false"
-        android:nestedScrollingEnabled="false">
+        android:nestedScrollingEnabled="false"
+        android:id="@+id/list_item_date_status">
 
         <TextView
             android:layout_width="wrap_content"
@@ -62,7 +63,8 @@
         android:layout_width="1dp"
         android:background="@android:color/darker_gray"
         android:layout_marginTop="10dp"
-        android:layout_marginBottom="10dp" />
+        android:layout_marginBottom="10dp"
+        android:id="@+id/list_item_status_separator" />
 
     <LinearLayout
         android:orientation="vertical"

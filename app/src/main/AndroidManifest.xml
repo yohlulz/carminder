@@ -48,8 +48,13 @@
 
         <service android:name=".service.CheckStatusService" />
 
-        <provider android:name=".data.EventSuggestionProvider"
-                  android:authorities="uk.to.carminder.app.SearchProvider" />
+        <provider
+            android:name=".data.EventSuggestionProvider"
+            android:authorities="@string/search_authority" />
+        <provider
+            android:authorities="@string/content_authority"
+            android:name=".data.EventProvider"
+            android:exported="false" />
     </application>
 
 </manifest>

@@ -18,6 +18,7 @@ import android.view.ViewGroup;
 import android.widget.ListView;
 
 import java.util.ArrayList;
+import java.util.Collection;
 
 import to.uk.carminder.app.data.EventSuggestionProvider;
 import to.uk.carminder.app.service.StatusEvent;
@@ -48,10 +49,6 @@ public class StatusActivity extends ActionBarActivity {
 
     private void handleIntent(Intent intent) {
         if (Intent.ACTION_SEARCH.equals(intent.getAction())) {
-            if (!Utility.isNetworkConnected(this)) {
-                Utility.notifyUser(this, "Please connect to internet and retry !");
-                return;
-            }
             startService(CheckStatusService.IntentBuilder.newInstance()
                                                          .carPlate(intent.getStringExtra(SearchManager.QUERY))
                                                          .replySubject(CheckStatusService.ACTION_ON_DEMAND)
@@ -69,6 +66,7 @@ public class StatusActivity extends ActionBarActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.action_settings:
+                //TODO start from alarm
                 startActivity(new Intent(this, SettingsActivity.class));
                 break;
 
@@ -128,17 +126,11 @@ public class StatusActivity extends ActionBarActivity {
 
             @Override
             public void onReceive(Context context, Intent intent) {
-                final String data = intent.getStringExtra(CheckStatusService.FIELD_DATA);
-                if (Utility.isStringNullOrEmpty(data)) {
-                    Utility.notifyUser(getActivity(), "The server could be down, please try again later !");
-                    return;
+                final StatusEvent event = StatusEvent.fromIntent(intent);
+                if (suggestions != null && !Utility.isStringNullOrEmpty(event.getStartDate())) {
+                    suggestions.saveRecentQuery(event.getName(), null);
                 }
-                for (StatusEvent statusEvent : StatusEvent.fromJSON(data)) {
-                    if (suggestions != null && !Utility.isStringNullOrEmpty(statusEvent.getStartDay())) {
-                        suggestions.saveRecentQuery(statusEvent.getName(), null);
-                    }
-                    adapter.add(statusEvent);
-                }
+                adapter.add(event);
             }
         }
     }

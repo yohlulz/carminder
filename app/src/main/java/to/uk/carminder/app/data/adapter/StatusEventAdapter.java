@@ -1,20 +1,24 @@
 package to.uk.carminder.app.data.adapter;
 
 import android.content.Context;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 
 import java.util.List;
 
 import to.uk.carminder.app.R;
+import to.uk.carminder.app.Utility;
 import to.uk.carminder.app.service.StatusEvent;
 
 public class StatusEventAdapter extends ArrayAdapter<StatusEvent> {
+    private static final String LOG_TAG = StatusEventAdapter.class.getSimpleName();
 
     public StatusEventAdapter(Context context, List<StatusEvent> events) {
         super(context, 0, events);
@@ -34,6 +38,10 @@ public class StatusEventAdapter extends ArrayAdapter<StatusEvent> {
             holder.event_end_day = (TextView) convertView.findViewById(R.id.list_item_end_day);
             holder.event_end_month = (TextView) convertView.findViewById(R.id.list_item_end_month);
             holder.event_description = (TextView) convertView.findViewById(R.id.list_item_event_description);
+
+            holder.event_separator = (View) convertView.findViewById(R.id.list_item_status_separator);
+            holder.event_dates = (LinearLayout) convertView.findViewById(R.id.list_item_date_status);
+
             convertView.setTag(holder);
 
         } else {
@@ -42,10 +50,16 @@ public class StatusEventAdapter extends ArrayAdapter<StatusEvent> {
 
         holder.event_name.setText(existentItem.getName());
         holder.event_description.setText(existentItem.getDescription());
-        holder.event_start_day.setText(existentItem.getStartDay());
-        holder.event_start_month.setText(existentItem.getStartMonth());
-        holder.event_end_day.setText(existentItem.getExpireDay());
-        holder.event_end_month.setText(existentItem.getExpireMonth());
+        if (Utility.isStringNullOrEmpty(existentItem.getStartDate()) || Utility.isStringNullOrEmpty(existentItem.getExpireDate())) {
+            holder.event_separator.setVisibility(View.GONE);
+            holder.event_dates.setVisibility(View.GONE);
+
+        } else {
+            holder.event_start_day.setText(existentItem.getStartDay());
+            holder.event_start_month.setText(existentItem.getStartMonth());
+            holder.event_end_day.setText(existentItem.getExpireDay());
+            holder.event_end_month.setText(existentItem.getExpireMonth());
+        }
 
         return convertView;
     }
@@ -57,5 +71,8 @@ public class StatusEventAdapter extends ArrayAdapter<StatusEvent> {
         TextView event_end_day;
         TextView event_end_month;
         TextView event_description;
+
+        LinearLayout event_dates;
+        View event_separator;
     }
 }
