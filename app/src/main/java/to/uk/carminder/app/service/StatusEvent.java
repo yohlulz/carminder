@@ -1,6 +1,7 @@
 package to.uk.carminder.app.service;
 
 import android.content.Intent;
+import android.os.Bundle;
 import android.util.Log;
 
 import org.json.JSONException;
@@ -90,6 +91,20 @@ public class StatusEvent {
         return description;
     }
 
+    public boolean isValid() {
+        return !Utility.isStringNullOrEmpty(getStartDate());
+    }
+
+    public void populateIntent(Intent intent) {
+        if (intent == null) {
+            return;
+        }
+        intent.putExtra(FIELD_PLATE, getName());
+        intent.putExtra(FIELD_MTPL, getDescription());
+        intent.putExtra(FIELD_START_DATE, getStartDate());
+        intent.putExtra(FIELD_END_DATE, getExpireDate());
+    }
+
     public static StatusEvent fromJSON(String data) {
         if (Utility.isStringNullOrEmpty(data)) {
             return INVALID_EVENT;
@@ -118,5 +133,19 @@ public class StatusEvent {
                                Utility.parse(DATE_FORMAT.get(), intent.getStringExtra(FIELD_END_DATE), null),
                                intent.getStringExtra(FIELD_PLATE),
                                intent.getStringExtra(FIELD_MTPL));
+    }
+
+    public static Bundle toBundle(Intent intent) {
+        final StatusEvent event = fromIntent(intent);
+        final Bundle result = new Bundle();
+        if (event == null || event == INVALID_EVENT) {
+            return result;
+        }
+        result.putString(FIELD_PLATE, event.getName());
+        result.putString(FIELD_MTPL, event.getDescription());
+        result.putString(FIELD_START_DATE, event.getStartDate());
+        result.putString(FIELD_END_DATE, event.getExpireDate());
+
+        return result;
     }
 }

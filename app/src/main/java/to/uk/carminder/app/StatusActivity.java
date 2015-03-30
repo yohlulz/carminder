@@ -19,6 +19,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ListView;
+import android.widget.Toast;
 
 import java.util.ArrayList;
 
@@ -103,8 +104,15 @@ public class StatusActivity extends ActionBarActivity {
 
             switch (item.getItemId()) {
                 case R.id.status_add_event:
-                    StatusEvent event = adapter.getItem(info.position);
-                    Log.i(LOG_TAG, event.getName());
+                    final StatusEvent event = adapter.getItem(info.position);
+                    if (event != null && event.isValid()) {
+                        final Intent addEvent = new Intent(getActivity(), CarEventsActivity.class);
+                        event.populateIntent(addEvent);
+
+                        startActivity(addEvent);
+                    } else {
+                        Toast.makeText(getActivity(), getString(R.string.message_connect_to_internet), Toast.LENGTH_LONG).show();
+                    }
                     break;
 
                 default:
@@ -152,7 +160,7 @@ public class StatusActivity extends ActionBarActivity {
             @Override
             public void onReceive(Context context, Intent intent) {
                 final StatusEvent event = StatusEvent.fromIntent(intent);
-                if (suggestions != null && !Utility.isStringNullOrEmpty(event.getStartDate())) {
+                if (suggestions != null && event.isValid()) {
                     suggestions.saveRecentQuery(event.getName(), null);
                 }
                 adapter.add(event);

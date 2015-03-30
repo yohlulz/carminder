@@ -37,5 +37,7 @@
     <!-- messages -->
     <string name="message_no_internet_connection">Internet unavailable</string>
     <string name="message_connect_to_internet">Please connect to Internet and retry</string>
+    <string name="title_activity_car_events">Car Events</string>
+    <string name="hello_world">Hello world!</string>
 
 </resources>
