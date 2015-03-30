@@ -10,15 +10,17 @@ import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.app.ActionBarActivity;
 import android.support.v4.app.Fragment;
 import android.os.Bundle;
+import android.util.Log;
+import android.view.ContextMenu;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.ListView;
 
 import java.util.ArrayList;
-import java.util.Collection;
 
 import to.uk.carminder.app.data.EventSuggestionProvider;
 import to.uk.carminder.app.service.StatusEvent;
@@ -35,7 +37,7 @@ public class StatusActivity extends ActionBarActivity {
         setContentView(R.layout.activity_status);
         if (savedInstanceState == null) {
             getSupportFragmentManager().beginTransaction()
-                    .add(R.id.container, new PlaceholderFragment())
+                    .add(R.id.container, new StatusFragment())
                     .commit();
         }
         handleIntent(getIntent());
@@ -80,25 +82,48 @@ public class StatusActivity extends ActionBarActivity {
         return true;
     }
 
-    public static class PlaceholderFragment extends Fragment {
+    public static class StatusFragment extends Fragment {
         private StatusEventAdapter adapter;
         private StatusReceiver receiver;
         private SearchRecentSuggestions suggestions;
 
 
-        public PlaceholderFragment() {
+        public StatusFragment() {
         }
 
         @Override
-        public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                                 Bundle savedInstanceState) {
-            View rootView = inflater.inflate(R.layout.fragment_status, container, false);
+        public void onCreateContextMenu(ContextMenu menu, View v, ContextMenu.ContextMenuInfo menuInfo) {
+            getActivity().getMenuInflater().inflate(R.menu.context_status_item, menu);
+            super.onCreateContextMenu(menu, v, menuInfo);
+        }
+
+        @Override
+        public boolean onContextItemSelected(MenuItem item) {
+            final AdapterView.AdapterContextMenuInfo info = (AdapterView.AdapterContextMenuInfo) item.getMenuInfo();
+
+            switch (item.getItemId()) {
+                case R.id.status_add_event:
+                    StatusEvent event = adapter.getItem(info.position);
+                    Log.i(LOG_TAG, event.getName());
+                    break;
+
+                default:
+                    return super.onContextItemSelected(item);
+            }
+
+            return true;
+        }
+
+        @Override
+        public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+            View view = inflater.inflate(R.layout.fragment_status, container, false);
 
             suggestions = new SearchRecentSuggestions(getActivity(), EventSuggestionProvider.AUTHORITY, EventSuggestionProvider.MODE);
             adapter = new StatusEventAdapter(getActivity(), new ArrayList<StatusEvent>());
-            final ListView eventsView = (ListView) rootView.findViewById(R.id.listView_event);
+            final ListView eventsView = (ListView) view.findViewById(R.id.listView_event);
             eventsView.setAdapter(adapter);
-            return rootView;
+            registerForContextMenu(eventsView);
+            return view;
         }
 
         @Override
