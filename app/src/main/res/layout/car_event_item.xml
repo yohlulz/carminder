@@ -2,44 +2,58 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:orientation="horizontal" android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:paddingTop="5dp"
-    android:paddingBottom="5dp">
+    android:paddingTop="6dp"
+    android:paddingBottom="6dp"
+    android:paddingLeft="10dp"
+    android:paddingRight="10dp">
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:text="RCA"
+        android:id="@+id/item_name"
+        android:textAppearance="?android:textAppearanceLarge"
+        android:layout_weight="1"
+        android:gravity="center_vertical" />
 
     <LinearLayout
         android:orientation="vertical"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_weight="7"
-        android:layout_marginLeft="10dp"
-        android:layout_marginRight="5dp">
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="New Text"
-            android:id="@+id/textView"
-            android:textAppearance="?android:textAppearanceLarge" />
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="New Text"
-            android:id="@+id/textView2"
-            android:textAppearance="?android:textAppearanceSmall" />
-    </LinearLayout>
-
-    <LinearLayout
-        android:orientation="horizontal"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:measureWithLargestChild="false"
+        android:layout_weight="0"
         android:gravity="center"
-        android:layout_gravity="right">
+        android:background="@drawable/ic_date">
 
-        <ImageView
+        <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:id="@+id/imageView2"
-            android:src="@drawable/ic_date" />
+            android:text="Feb"
+            android:id="@+id/item_picker_month"
+            android:textAppearance="?android:textAppearanceSmall"
+            android:layout_weight="0"
+            android:layout_marginTop="3dp" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="9"
+            android:id="@+id/item_picker_day"
+            android:textAppearance="?android:textAppearanceLarge"
+            android:singleLine="true"
+            android:textStyle="bold" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="2015"
+            android:id="@+id/item_picker_year"
+            android:textAppearance="?android:textAppearanceLarge"
+            android:layout_gravity="right"
+            android:textStyle="italic"
+            android:textSize="@dimen/abc_text_size_caption_material"
+            android:layout_marginRight="4dp"
+            android:layout_marginTop="-5dp" />
+
     </LinearLayout>
+
 </LinearLayout>

@@ -7,6 +7,37 @@
     tools:context="to.uk.carminder.app.CarEventsActivity.CarEventsFragment"
     android:orientation="vertical">
 
+    <LinearLayout
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@android:color/darker_gray"
+        android:paddingLeft="20dp"
+        android:paddingTop="6dp"
+        android:paddingBottom="6dp"
+        android:layout_marginBottom="5dp">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Car number plate"
+            android:id="@+id/list_item_car_name_label"
+            android:layout_weight="0"
+            android:gravity="center_vertical" />
+
+        <EditText
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/list_item_car_name"
+            android:layout_weight="1"
+            android:layout_marginLeft="13dp"
+            android:layout_marginRight="13dp"
+            android:textAppearance="?android:textAppearanceLarge"
+            android:text="cj90moa"
+            android:textStyle="bold"
+            android:gravity="center" />
+    </LinearLayout>
+
     <ScrollView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -32,8 +63,8 @@
         <Button
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Add event"
-            android:id="@+id/btn_events_add"
+            android:text="Cancel"
+            android:id="@+id/btn_events_cancel"
             android:layout_weight="1"
             android:layout_marginLeft="10dp"
             android:layout_marginRight="10dp" />
@@ -41,11 +72,12 @@
         <Button
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Cancel"
-            android:id="@+id/btn_events_cancel"
+            android:text="Save"
+            android:id="@+id/btn_events_save"
             android:layout_weight="1"
             android:layout_marginLeft="10dp"
             android:layout_marginRight="10dp" />
+
     </LinearLayout>
 
 </LinearLayout>
