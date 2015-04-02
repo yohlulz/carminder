@@ -59,6 +59,7 @@
         </activity>
 
         <service android:name=".service.CheckStatusService" />
+        <service android:name=".service.EventsModifierService" />
 
         <provider
             android:name=".data.EventSuggestionProvider"

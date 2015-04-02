@@ -20,10 +20,9 @@ public class EventDBHelper extends SQLiteOpenHelper {
 
     @Override
     public void onCreate(SQLiteDatabase db) {
-        db.execSQL(String.format("CREATE TABLE %s (%s TEXT PRIMARY KEY, %s %s);",
+        db.execSQL(String.format("CREATE TABLE %s (%s TEXT PRIMARY KEY);",
                                     EventContract.CarEntry.TABLE_NAME,
-                                    EventContract.CarEntry.COLUMN_PLATE,
-                                    EventContract.CarEntry.COLUMN_DESCRIPTION, TEXT_NOT_NULL));
+                                    EventContract.CarEntry.COLUMN_PLATE));
 
         db.execSQL(String.format("CREATE TABLE %s (%s INTEGER PRIMARY KEY AUTOINCREMENT, %s %s, %s %s, %s %s, %s %s, FOREIGN KEY (%s) REFERENCES %s (%s), UNIQUE (%s, %s) ON CONFLICT REPLACE);",
                 EventContract.EventEntry.TABLE_NAME,

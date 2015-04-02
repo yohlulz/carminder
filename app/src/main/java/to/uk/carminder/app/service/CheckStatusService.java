@@ -20,18 +20,19 @@ import java.util.Date;
 import to.uk.carminder.app.R;
 import to.uk.carminder.app.Utility;
 import to.uk.carminder.app.data.EventContract;
+import to.uk.carminder.app.data.StatusEvent;
 
 public class CheckStatusService extends IntentService {
     private static final String LOG_TAG = CheckStatusService.class.getSimpleName();
     public static final String ACTION_ON_DEMAND = "uk.to.carminder.app.DEMAND";
     public static final String ACTION_NOTIFICATION = "uk.to.carminder.app.NOTIFICATION";
+    public static final String FIELD_DATA = "FIELD_DATA";
 
     private static final String FIELD_MAIN_API_URL = "FIELD_API";
     private static final String FIELD_BACKUP_API_URL = "FIELD_BACKUP_API";
     private static final String FIELD_CAR_PLATE = "FIELD_PLATE";
     private static final String FIELD_DATE = "FIELD_DATE";
     private static final String FIELD_REPLY_SUBJECT = "FIELD_REPLY";
-    public static final String FIELD_DATA = "FIELD_DATA";
     private static final String FIELD_TIMEOUT = "FIELD_TIMEOUT";
 
     private static final String WORKER_NAME = "CheckStatus Worker";
@@ -118,13 +119,11 @@ public class CheckStatusService extends IntentService {
                 if (replyIntent == null) {
                     if (Utility.isNetworkConnected(context)) {
                         final String rawData = fetchData(mainURL);
-                        replyIntent = buildReplyIntent(replySubject, (rawData != null) ? rawData : fetchData(backupURL));
-                        ensureData(context, replyIntent);
+                        replyIntent = buildReplyIntent(context, replySubject, (rawData != null) ? rawData : fetchData(backupURL), false);
+                        ensureData(context, (StatusEvent) replyIntent.getParcelableExtra(FIELD_DATA));
 
                     } else {
-                        replyIntent = buildReplyIntent(replySubject, null);
-                        replyIntent.putExtra(StatusEvent.FIELD_PLATE, context.getString(R.string.message_no_internet_connection));
-                        replyIntent.putExtra(StatusEvent.FIELD_MTPL, context.getString(R.string.message_connect_to_internet));
+                        replyIntent = buildReplyIntent(context, replySubject, null, true);
                     }
                 }
                 LocalBroadcastManager.getInstance(context).sendBroadcast(replyIntent);
@@ -134,15 +133,15 @@ public class CheckStatusService extends IntentService {
             }
         }
 
-        private Intent buildReplyIntent(String action, String rawData) {
+        private Intent buildReplyIntent(Context context, String action, String rawData, boolean setInternetUnavailable) {
             final Intent intent = new Intent();
-            final StatusEvent event = StatusEvent.fromJSON(rawData);
-
             intent.setAction(action);
-            intent.putExtra(StatusEvent.FIELD_MTPL, event.getDescription());
-            intent.putExtra(StatusEvent.FIELD_PLATE, event.getName());
-            intent.putExtra(StatusEvent.FIELD_START_DATE, event.getStartDate());
-            intent.putExtra(StatusEvent.FIELD_END_DATE, event.getExpireDate());
+            final StatusEvent event = StatusEvent.fromJSON(rawData);
+            if (setInternetUnavailable) {
+                event.put(StatusEvent.FIELD_NAME, context.getString(R.string.message_no_internet_connection));
+                event.put(StatusEvent.FIELD_DESCRIPTION, context.getString(R.string.message_connect_to_internet));
+            }
+            intent.putExtra(FIELD_DATA, event);
 
             return intent;
         }
@@ -154,44 +153,29 @@ public class CheckStatusService extends IntentService {
                                                EventContract.StatusEntry.COLUMN_CAR_NUMBER + " LIKE ?",
                                                new String[] {carPlate},
                                                null);
-            Intent statusIntent = null;
-            if (statusCursor.moveToFirst()) {
-                statusIntent = new Intent();
-                statusIntent.setAction(action);
-
-                final String startDate = StatusEvent.DATE_FORMAT.get().format(new Date(statusCursor.getLong(EventContract.StatusEntry.INDEX_COLUMN_START_DATE)));
-                final String endDate = StatusEvent.DATE_FORMAT.get().format(new Date(statusCursor.getLong(EventContract.StatusEntry.INDEX_COLUMN_END_DATE)));
-                statusIntent.putExtra(StatusEvent.FIELD_PLATE, statusCursor.getString(EventContract.StatusEntry.INDEX_COLUMN_CAR_NUMBER));
-                statusIntent.putExtra(StatusEvent.FIELD_MTPL, statusCursor.getString(EventContract.StatusEntry.INDEX_COLUMN_DESCRIPTION));
-                statusIntent.putExtra(StatusEvent.FIELD_START_DATE, startDate);
-                statusIntent.putExtra(StatusEvent.FIELD_END_DATE, endDate);
-
-                statusCursor.close();
-            }
+            final StatusEvent event = StatusEvent.fromCursor(statusCursor);
             deleteOldData(context);
+            if (event != null) {
+                final Intent statusIntent = new Intent();
+                statusIntent.setAction(action);
+                statusIntent.putExtra(FIELD_DATA, event);
+                return statusIntent;
+            }
 
-            return statusIntent;
+            return null;
         }
 
-        private void ensureData(Context context, Intent statusEvent) {
-            final Date startDate = Utility.parse(StatusEvent.DATE_FORMAT.get(), statusEvent.getStringExtra(StatusEvent.FIELD_START_DATE), null);
-            final Date endDate = Utility.parse(StatusEvent.DATE_FORMAT.get(), statusEvent.getStringExtra(StatusEvent.FIELD_END_DATE), null);
-            if (startDate == null || endDate == null || getFromCache(context, statusEvent.getAction()) != null) {
+        private void ensureData(Context context, StatusEvent statusEvent) {
+            if (statusEvent == null || !statusEvent.isValid() || getFromCache(context, ACTION_ON_DEMAND) != null) {
                 /* data already present or invalid data, drop request */
                 return;
             }
-            final ContentValues values = new ContentValues();
-            values.put(EventContract.StatusEntry.COLUMN_CAR_NUMBER, statusEvent.getStringExtra(StatusEvent.FIELD_PLATE));
-            values.put(EventContract.StatusEntry.COLUMN_DESCRIPTION, statusEvent.getStringExtra(StatusEvent.FIELD_MTPL));
-            values.put(EventContract.StatusEntry.COLUMN_START_DATE, startDate.getTime());
-            values.put(EventContract.StatusEntry.COLUMN_END_DATE, endDate.getTime());
-
-            context.getContentResolver().insert(EventContract.StatusEntry.CONTENT_URI, values);
+            context.getContentResolver().insert(EventContract.StatusEntry.CONTENT_URI, statusEvent.getContentValues());
         }
 
         private void deleteOldData(Context context) {
             final int deletedRows = context.getContentResolver().delete(EventContract.StatusEntry.CONTENT_URI,
-                                                                            EventContract.StatusEntry.COLUMN_END_DATE + " < ?",
+                                                                        EventContract.StatusEntry.COLUMN_END_DATE + " < ?",
                                                                             new String[] {"" + new Date().getTime()});
             Log.i(LOG_TAG, String.format("Deleted %d rows from \"%s\" table", deletedRows, EventContract.StatusEntry.TABLE_NAME));
         }

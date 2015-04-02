@@ -32,9 +32,9 @@ public class Utility {
         Toast.makeText(context, message, Toast.LENGTH_LONG).show();
     }
 
-    public static Date parse(DateFormat formatter, String date, Date defaultValue) {
+    public static Long parse(DateFormat formatter, String date, Long defaultValue) {
         try {
-            return formatter.parse(date);
+            return formatter.parse(date).getTime();
 
         } catch (ParseException ex) {
             Log.w(LOG_TAG, ex.getMessage(), ex);

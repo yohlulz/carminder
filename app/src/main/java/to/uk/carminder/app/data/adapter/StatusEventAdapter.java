@@ -13,7 +13,7 @@ import java.util.List;
 
 import to.uk.carminder.app.R;
 import to.uk.carminder.app.Utility;
-import to.uk.carminder.app.service.StatusEvent;
+import to.uk.carminder.app.data.StatusEvent;
 
 public class StatusEventAdapter extends ArrayAdapter<StatusEvent> {
     private static final String LOG_TAG = StatusEventAdapter.class.getSimpleName();
@@ -46,8 +46,8 @@ public class StatusEventAdapter extends ArrayAdapter<StatusEvent> {
             holder = (ViewHolder) convertView.getTag();
         }
 
-        holder.event_name.setText(existentItem.getName());
-        holder.event_description.setText(existentItem.getDescription());
+        holder.event_name.setText(existentItem.getAsString(StatusEvent.FIELD_NAME));
+        holder.event_description.setText(existentItem.getAsString(StatusEvent.FIELD_DESCRIPTION));
         if (Utility.isStringNullOrEmpty(existentItem.getStartDate()) || Utility.isStringNullOrEmpty(existentItem.getExpireDate())) {
             holder.event_separator.setVisibility(View.GONE);
             holder.event_dates.setVisibility(View.GONE);
