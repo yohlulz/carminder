@@ -45,6 +45,6 @@ public class Utility {
 
     public static void clearSearchHistory(Context context) {
         new SearchRecentSuggestions(context, EventSuggestionProvider.AUTHORITY, EventSuggestionProvider.MODE).clearHistory();
-        Toast.makeText(context, "Cleared search history", Toast.LENGTH_LONG).show();
+        notifyUser(context, "Cleared search history");
     }
 }

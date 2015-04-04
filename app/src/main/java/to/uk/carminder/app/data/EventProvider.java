@@ -10,9 +10,10 @@ import android.database.sqlite.SQLiteOpenHelper;
 import android.net.Uri;
 
 public class EventProvider extends ContentProvider {
-    private static final int TYPE_CAR = 100;
-    private static final int TYPE_EVENT = 200;
-    private static final int TYPE_STATUS = 300;
+    private static final int TYPE_STATUS = 100;
+    private static final int TYPE_STATUS_BY_CAR_NUMBER = 200;
+
+    public static final String SELECTION_CAR_PLATE = EventContract.StatusEntry.COLUMN_CAR_NUMBER + " LIKE ?";
 
     private static final UriMatcher URI_MATCHER = UriMatcherHolder.URI_MATCHER;
 
@@ -28,16 +29,12 @@ public class EventProvider extends ContentProvider {
     public Cursor query(Uri uri, String[] projection, String selection, String[] selectionArgs, String sortOrder) {
         final Cursor result;
         switch (URI_MATCHER.match(uri)) {
-            case TYPE_CAR:
-                result = dbHelper.getReadableDatabase().query(EventContract.CarEntry.TABLE_NAME, projection, selection, selectionArgs, null, null, sortOrder);
-                break;
-
-            case TYPE_EVENT:
-                result = dbHelper.getReadableDatabase().query(EventContract.EventEntry.TABLE_NAME, projection, selection, selectionArgs, null, null, sortOrder);
-                break;
-
             case TYPE_STATUS:
                 result = dbHelper.getReadableDatabase().query(EventContract.StatusEntry.TABLE_NAME, projection, selection, selectionArgs, null, null, sortOrder);
+                break;
+
+            case TYPE_STATUS_BY_CAR_NUMBER:
+                result = getStatusEntryByCarNumber(uri, projection, sortOrder);
                 break;
 
             default:
@@ -48,16 +45,25 @@ public class EventProvider extends ContentProvider {
         return result;
     }
 
+    private Cursor getStatusEntryByCarNumber(Uri uri, String[] projection, String sortOrder) {
+        final String carPlate = EventContract.StatusEntry.getCarPlateFromUri(uri);
+
+        return dbHelper.getReadableDatabase().query(EventContract.StatusEntry.TABLE_NAME,
+                                                    projection,
+                                                    SELECTION_CAR_PLATE,
+                                                    new String[] {carPlate},
+                                                    null,
+                                                    null,
+                                                    sortOrder);
+    }
+
     @Override
     public String getType(Uri uri) {
         switch (URI_MATCHER.match(uri)) {
-            case TYPE_EVENT:
-                return EventContract.EventEntry.CONTENT_TYPE;
-
-            case TYPE_CAR:
-                return EventContract.CarEntry.CONTENT_TYPE;
-
             case TYPE_STATUS:
+                return EventContract.StatusEntry.CONTENT_TYPE;
+
+            case TYPE_STATUS_BY_CAR_NUMBER:
                 return EventContract.StatusEntry.CONTENT_TYPE;
 
             default:
@@ -71,24 +77,6 @@ public class EventProvider extends ContentProvider {
         final Uri result;
 
         switch (URI_MATCHER.match(uri)) {
-            case TYPE_CAR:
-                long carRowId = db.insertOrThrow(EventContract.CarEntry.TABLE_NAME, null, values);
-                if (carRowId > 0) {
-                    result = EventContract.CarEntry.buildCarUri(carRowId);
-                } else {
-                    throw new SQLException("Failed to insert row into " + uri);
-                }
-                break;
-
-            case TYPE_EVENT:
-                long eventRowId = db.insert(EventContract.EventEntry.TABLE_NAME, null, values);
-                if (eventRowId > 0) {
-                    result = EventContract.EventEntry.buildEventUri(eventRowId);
-                } else {
-                    throw new SQLException("Failed to insert row into " + uri);
-                }
-                break;
-
             case TYPE_STATUS:
                 long statusRowId = db.insert(EventContract.StatusEntry.TABLE_NAME, null, values);
                 if (statusRowId > 0) {
@@ -114,14 +102,6 @@ public class EventProvider extends ContentProvider {
             selection = "1";
         }
         switch (URI_MATCHER.match(uri)) {
-            case TYPE_CAR:
-                deletedRows = db.delete(EventContract.CarEntry.TABLE_NAME, selection, selectionArgs);
-                break;
-
-            case TYPE_EVENT:
-                deletedRows = db.delete(EventContract.EventEntry.TABLE_NAME, selection, selectionArgs);
-                break;
-
             case TYPE_STATUS:
                 deletedRows = db.delete(EventContract.StatusEntry.TABLE_NAME, selection, selectionArgs);
                 break;
@@ -141,14 +121,6 @@ public class EventProvider extends ContentProvider {
         final SQLiteDatabase db = dbHelper.getWritableDatabase();
         int updatedRows = 0;
         switch (URI_MATCHER.match(uri)) {
-            case TYPE_CAR:
-                updatedRows = db.update(EventContract.CarEntry.TABLE_NAME, values, selection, selectionArgs);
-                break;
-
-            case TYPE_EVENT:
-                updatedRows = db.update(EventContract.EventEntry.TABLE_NAME, values, selection, selectionArgs);
-                break;
-
             case TYPE_STATUS:
                 updatedRows = db.update(EventContract.StatusEntry.TABLE_NAME, values, selection, selectionArgs);
                 break;
@@ -165,12 +137,10 @@ public class EventProvider extends ContentProvider {
 
     private static class UriMatcherHolder {
         private static final UriMatcher URI_MATCHER = new UriMatcher(UriMatcher.NO_MATCH);
+
         static {
-            URI_MATCHER.addURI(EventContract.CONTENT_AUTHORITY, EventContract.PATH_CAR, TYPE_CAR);
-
-            URI_MATCHER.addURI(EventContract.CONTENT_AUTHORITY, EventContract.PATH_EVENT, TYPE_EVENT);
-
             URI_MATCHER.addURI(EventContract.CONTENT_AUTHORITY, EventContract.PATH_STATUS, TYPE_STATUS);
+            URI_MATCHER.addURI(EventContract.CONTENT_AUTHORITY, EventContract.PATH_STATUS + "/*", TYPE_STATUS_BY_CAR_NUMBER);
         }
     }
 }

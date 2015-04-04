@@ -46,7 +46,7 @@ public class StatusEventAdapter extends ArrayAdapter<StatusEvent> {
             holder = (ViewHolder) convertView.getTag();
         }
 
-        holder.event_name.setText(existentItem.getAsString(StatusEvent.FIELD_NAME));
+        holder.event_name.setText(existentItem.getAsString(StatusEvent.FIELD_CAR_NUMBER));
         holder.event_description.setText(existentItem.getAsString(StatusEvent.FIELD_DESCRIPTION));
         if (Utility.isStringNullOrEmpty(existentItem.getStartDate()) || Utility.isStringNullOrEmpty(existentItem.getExpireDate())) {
             holder.event_separator.setVisibility(View.GONE);

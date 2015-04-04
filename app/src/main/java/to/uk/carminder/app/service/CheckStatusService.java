@@ -20,6 +20,7 @@ import java.util.Date;
 import to.uk.carminder.app.R;
 import to.uk.carminder.app.Utility;
 import to.uk.carminder.app.data.EventContract;
+import to.uk.carminder.app.data.EventProvider;
 import to.uk.carminder.app.data.StatusEvent;
 
 public class CheckStatusService extends IntentService {
@@ -138,7 +139,7 @@ public class CheckStatusService extends IntentService {
             intent.setAction(action);
             final StatusEvent event = StatusEvent.fromJSON(rawData);
             if (setInternetUnavailable) {
-                event.put(StatusEvent.FIELD_NAME, context.getString(R.string.message_no_internet_connection));
+                event.put(StatusEvent.FIELD_CAR_NUMBER, context.getString(R.string.message_no_internet_connection));
                 event.put(StatusEvent.FIELD_DESCRIPTION, context.getString(R.string.message_connect_to_internet));
             }
             intent.putExtra(FIELD_DATA, event);
@@ -149,8 +150,8 @@ public class CheckStatusService extends IntentService {
         private Intent getFromCache(Context context, String action) {
             final Cursor statusCursor = context.getContentResolver().query(
                                                EventContract.StatusEntry.CONTENT_URI,
-                                               null,
-                                               EventContract.StatusEntry.COLUMN_CAR_NUMBER + " LIKE ?",
+                                               StatusEvent.COLUMNS_STATUS_ENTRY,
+                                               EventProvider.SELECTION_CAR_PLATE,
                                                new String[] {carPlate},
                                                null);
             final StatusEvent event = StatusEvent.fromCursor(statusCursor);

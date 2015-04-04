@@ -37,7 +37,8 @@
             android:name=".StatusActivity"
             android:label="@string/title_activity_status"
             android:launchMode="singleTop"
-            android:parentActivityName=".MainActivity" >
+            android:parentActivityName=".MainActivity"
+            android:theme="@style/StatusTheme" >
             <intent-filter>
                 <action android:name="android.intent.action.SEARCH" />
             </intent-filter>

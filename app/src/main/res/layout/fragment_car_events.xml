@@ -35,7 +35,11 @@
             android:textAppearance="?android:textAppearanceLarge"
             android:text="cj90moa"
             android:textStyle="bold"
-            android:gravity="center" />
+            android:gravity="center"
+            android:singleLine="true"
+            android:inputType="textCapCharacters"
+            android:selectAllOnFocus="true"
+            android:focusableInTouchMode="true" />
     </LinearLayout>
 
     <ScrollView

@@ -78,7 +78,7 @@ public class EventsModifierService extends IntentService {
         private Intent buildReplyIntent(Context context, String action, StatusEvent data) {
             final Intent intent = new Intent();
             intent.setAction(action);
-            intent.putExtra(FIELD_DATA, data.getAsString(StatusEvent.FIELD_NAME));
+            intent.putExtra(FIELD_DATA, data.getAsString(StatusEvent.FIELD_CAR_NUMBER));
 
             return intent;
         }

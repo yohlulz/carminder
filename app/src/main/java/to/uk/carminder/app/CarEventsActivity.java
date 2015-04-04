@@ -1,6 +1,11 @@
 package to.uk.carminder.app;
 
 import android.content.Intent;
+import android.database.Cursor;
+import android.support.annotation.Nullable;
+import android.support.v4.app.LoaderManager;
+import android.support.v4.content.CursorLoader;
+import android.support.v4.content.Loader;
 import android.support.v7.app.ActionBarActivity;
 import android.support.v4.app.Fragment;
 import android.os.Bundle;
@@ -9,9 +14,12 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.inputmethod.EditorInfo;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
 
+import to.uk.carminder.app.data.EventContract;
 import to.uk.carminder.app.data.adapter.CarEventsAdapter;
 import to.uk.carminder.app.data.StatusEvent;
 import to.uk.carminder.app.service.EventsModifierService;
@@ -58,8 +66,11 @@ public class CarEventsActivity extends ActionBarActivity {
         return true;
     }
 
-    public static class CarEventsFragment extends Fragment {
+    public static class CarEventsFragment extends Fragment implements LoaderManager.LoaderCallbacks<Cursor> {
+        private static final int STATUS_LOADER = 0;
         private CarEventsAdapter adapter;
+        private EditText carNumberView;
+        private String carPlate;
 
         public CarEventsFragment() {
         }
@@ -72,14 +83,67 @@ public class CarEventsActivity extends ActionBarActivity {
             final ListView view = (ListView) rootView.findViewById(R.id.list_item_car_event);
             view.setAdapter(adapter);
 
-            final EditText carNumberView = (EditText) rootView.findViewById(R.id.list_item_car_name);
-            final String carPlate = getArguments() != null ? getArguments().getString(EventsModifierService.FIELD_DATA) : null;
-            if (!Utility.isStringNullOrEmpty(carPlate)) {
-                carNumberView.setText(carPlate);
-            }
-            //TODO add carNUmberView to adapter to be able to set it from DB
+            carNumberView = (EditText) rootView.findViewById(R.id.list_item_car_name);
+            carPlate = getArguments() != null ? getArguments().getString(EventsModifierService.FIELD_DATA) : null;
+            updateCarPlate(carPlate);
+
+            ((Button) rootView.findViewById(R.id.btn_events_cancel)).setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    getActivity().onBackPressed();
+                }
+            });
+            ((Button) rootView.findViewById(R.id.btn_events_save)).setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Utility.notifyUser(getActivity(), "Eh");
+                }
+            });
+
 
             return rootView;
+        }
+
+        @Override
+        public void onActivityCreated(@Nullable Bundle savedInstanceState) {
+            getLoaderManager().initLoader(STATUS_LOADER, null, this);
+            super.onActivityCreated(savedInstanceState);
+        }
+
+        @Override
+        public Loader<Cursor> onCreateLoader(int id, Bundle args) {
+            return new CursorLoader(getActivity(),
+                    EventContract.StatusEntry.buildStatusByCarPlateUri(carPlate),
+                    StatusEvent.COLUMNS_STATUS_ENTRY,
+                    null,
+                    null,
+                    null);
+        }
+
+        @Override
+        public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
+            adapter.swapCursor(data);
+//            updateCarPlate(data.getString(StatusEvent.INDEX_COLUMN_CAR_NUMBER));
+            //TODO close old cursor, adapter.changeCursor(null) does not work, throws     android.database.StaleDataException: Attempting to access a closed CursorWindow.Most probable cause: cursor is deactivated prior to calling this method.
+
+        }
+
+        @Override
+        public void onLoaderReset(Loader<Cursor> loader) {
+            adapter.swapCursor(null);
+            updateCarPlate(null);
+            //TODO close old cursor, adapter.changeCursor(null) does not work, throws     android.database.StaleDataException: Attempting to access a closed CursorWindow.Most probable cause: cursor is deactivated prior to calling this method.
+        }
+
+        private void updateCarPlate(String carPlate) {
+            if (carNumberView == null) {
+                return;
+            }
+            if (!Utility.isStringNullOrEmpty(carPlate)) {
+                carNumberView.setText(carPlate);
+            } else {
+                carNumberView.setText(Utility.EMPTY_STRING);
+            }
         }
     }
 }

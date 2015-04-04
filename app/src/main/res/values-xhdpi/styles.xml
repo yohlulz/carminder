@@ -1,0 +1,7 @@
+<resources>
+
+    <!-- Status activity theme. -->
+    <style name="StatusTheme" parent="Theme.AppCompat.Light.Dialog">
+    </style>
+
+</resources>

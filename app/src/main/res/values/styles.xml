@@ -4,9 +4,12 @@
     <style name="AppTheme" parent="Theme.AppCompat.Light">
     </style>
 
-
     <!-- Settings activity theme. -->
     <style name="SettingsTheme" parent="AppTheme">
+    </style>
+
+    <!-- Status activity theme. -->
+    <style name="StatusTheme" parent="AppTheme">
     </style>
 
 </resources>

@@ -107,11 +107,16 @@ public class StatusActivity extends ActionBarActivity {
                 case R.id.status_add_event:
                     final StatusEvent event = adapter.getItem(info.position);
                     if (event != null && event.isValid()) {
-                        getActivity().startService(EventsModifierService.IntentBuilder.newInstance()
-                                                                                      .command(EventsModifierService.COMMAND_ADD_EVENT)
-                                                                                      .event(event)
-                                                                                      .replySubject(EventsModifierService.ACTION_MODIFY_STATUS)
-                                                                                      .build(getActivity()));
+                        //TODO refactor activity -> service -> activity behaviour
+                        final Intent eventsIntent = new Intent(getActivity(), CarEventsActivity.class);
+                        eventsIntent.putExtra(EventsModifierService.FIELD_DATA, event.getAsString(StatusEvent.FIELD_CAR_NUMBER));
+                        startActivity(eventsIntent);
+
+//                        getActivity().startService(EventsModifierService.IntentBuilder.newInstance()
+//                                                                                      .command(EventsModifierService.COMMAND_ADD_EVENT)
+//                                                                                      .event(event)
+//                                                                                      .replySubject(EventsModifierService.ACTION_MODIFY_STATUS)
+//                                                                                      .build(getActivity()));
 
                     } else {
                         Toast.makeText(getActivity(), getString(R.string.message_connect_to_internet), Toast.LENGTH_LONG).show();
@@ -167,8 +172,9 @@ public class StatusActivity extends ActionBarActivity {
                     case CheckStatusService.ACTION_ON_DEMAND:
                         final StatusEvent event = (StatusEvent) intent.getParcelableExtra(CheckStatusService.FIELD_DATA);
                         if (suggestions != null && event != null && event.isValid()) {
-                            suggestions.saveRecentQuery(event.getAsString(StatusEvent.FIELD_NAME), null);
+                            suggestions.saveRecentQuery(event.getAsString(StatusEvent.FIELD_CAR_NUMBER), null);
                         }
+                        adapter.clear();
                         adapter.add(event);
                         break;
 

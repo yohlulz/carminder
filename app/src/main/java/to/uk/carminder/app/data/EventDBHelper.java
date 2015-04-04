@@ -20,35 +20,21 @@ public class EventDBHelper extends SQLiteOpenHelper {
 
     @Override
     public void onCreate(SQLiteDatabase db) {
-        db.execSQL(String.format("CREATE TABLE %s (%s TEXT PRIMARY KEY);",
-                                    EventContract.CarEntry.TABLE_NAME,
-                                    EventContract.CarEntry.COLUMN_PLATE));
-
-        db.execSQL(String.format("CREATE TABLE %s (%s INTEGER PRIMARY KEY AUTOINCREMENT, %s %s, %s %s, %s %s, %s %s, FOREIGN KEY (%s) REFERENCES %s (%s), UNIQUE (%s, %s) ON CONFLICT REPLACE);",
-                EventContract.EventEntry.TABLE_NAME,
-                EventContract.EventEntry._ID,
-                EventContract.EventEntry.COLUMN_NAME, TEXT_NOT_NULL,
-                EventContract.EventEntry.COLUMN_DESCRIPTION, TEXT_NOT_NULL,
-                EventContract.EventEntry.COLUMN_END_DATE, INTEGER_NOT_NULL,
-                EventContract.EventEntry.COLUMN_CAR_NUMBER, TEXT_NOT_NULL,
-  /* FK */      EventContract.EventEntry.COLUMN_CAR_NUMBER, EventContract.CarEntry.TABLE_NAME, EventContract.CarEntry.COLUMN_PLATE,
-  /* UNIQUE */  EventContract.EventEntry.COLUMN_CAR_NUMBER, EventContract.EventEntry.COLUMN_NAME
-                ));
-
-        db.execSQL(String.format("CREATE TABLE %s (%s TEXT PRIMARY KEY, %s %s, %s %s, %s %s);",
+        db.execSQL(String.format("CREATE TABLE %s (%s INTEGER PRIMARY KEY AUTOINCREMENT, %s %s, %s %s, %s %s, %s %s, %s %s, UNIQUE (%s, %s) ON CONFLICT REPLACE);",
                 EventContract.StatusEntry.TABLE_NAME,
-                EventContract.StatusEntry.COLUMN_CAR_NUMBER,
+                EventContract.StatusEntry._ID,
+                EventContract.StatusEntry.COLUMN_CAR_NUMBER, TEXT_NOT_NULL,
+                EventContract.StatusEntry.COLUMN_EVENT_NAME, TEXT_NOT_NULL,
                 EventContract.StatusEntry.COLUMN_DESCRIPTION, TEXT_NOT_NULL,
                 EventContract.StatusEntry.COLUMN_START_DATE, INTEGER_NOT_NULL,
-                EventContract.StatusEntry.COLUMN_END_DATE, INTEGER_NOT_NULL
+                EventContract.StatusEntry.COLUMN_END_DATE, INTEGER_NOT_NULL,
+  /* UNIQUE */  EventContract.StatusEntry.COLUMN_CAR_NUMBER, EventContract.StatusEntry.COLUMN_EVENT_NAME
                 ));
     }
 
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
         Log.i(LOG_TAG, String.format("onUpgrade from version %d to version %d.", oldVersion, newVersion));
-        dropTable(db, EventContract.EventEntry.TABLE_NAME);
-        dropTable(db, EventContract.CarEntry.TABLE_NAME);
         dropTable(db, EventContract.StatusEntry.TABLE_NAME);
         onCreate(db);
     }
