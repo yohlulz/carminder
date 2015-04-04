@@ -85,20 +85,30 @@ public class CarEventsActivity extends ActionBarActivity {
 
             carNumberView = (EditText) rootView.findViewById(R.id.list_item_car_name);
             carPlate = getArguments() != null ? getArguments().getString(EventsModifierService.FIELD_DATA) : null;
-            updateCarPlate(carPlate);
+            if (!Utility.isStringNullOrEmpty(carPlate)) {
+                carNumberView.setText(carPlate);
+            }
+            adapter.setCarNumberView(carNumberView);
 
-            ((Button) rootView.findViewById(R.id.btn_events_cancel)).setOnClickListener(new View.OnClickListener() {
+            rootView.findViewById(R.id.btn_events_cancel).setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
                     getActivity().onBackPressed();
                 }
             });
-            ((Button) rootView.findViewById(R.id.btn_events_save)).setOnClickListener(new View.OnClickListener() {
+            rootView.findViewById(R.id.btn_events_save).setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
                     Utility.notifyUser(getActivity(), "Eh");
                 }
             });
+            rootView.findViewById(R.id.list_item_add_new).setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Utility.notifyUser(getActivity(), "Add new event");
+                }
+            });
+
 
 
             return rootView;
@@ -122,28 +132,22 @@ public class CarEventsActivity extends ActionBarActivity {
 
         @Override
         public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
+            //TODO merge data cursor with matrix cursor to be able to add data manually
             adapter.swapCursor(data);
-//            updateCarPlate(data.getString(StatusEvent.INDEX_COLUMN_CAR_NUMBER));
-            //TODO close old cursor, adapter.changeCursor(null) does not work, throws     android.database.StaleDataException: Attempting to access a closed CursorWindow.Most probable cause: cursor is deactivated prior to calling this method.
-
         }
 
         @Override
         public void onLoaderReset(Loader<Cursor> loader) {
             adapter.swapCursor(null);
-            updateCarPlate(null);
-            //TODO close old cursor, adapter.changeCursor(null) does not work, throws     android.database.StaleDataException: Attempting to access a closed CursorWindow.Most probable cause: cursor is deactivated prior to calling this method.
         }
 
-        private void updateCarPlate(String carPlate) {
-            if (carNumberView == null) {
-                return;
+        @Override
+        public void onDestroy() {
+            final Cursor cursor = adapter.getCursor();
+            if (cursor != null) {
+                cursor.close();
             }
-            if (!Utility.isStringNullOrEmpty(carPlate)) {
-                carNumberView.setText(carPlate);
-            } else {
-                carNumberView.setText(Utility.EMPTY_STRING);
-            }
+            super.onDestroy();
         }
     }
 }

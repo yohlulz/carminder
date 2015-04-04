@@ -40,6 +40,7 @@
             android:inputType="textCapCharacters"
             android:selectAllOnFocus="true"
             android:focusableInTouchMode="true" />
+
     </LinearLayout>
 
     <ScrollView
@@ -49,7 +50,7 @@
         android:layout_weight="1">
 
         <ListView
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:id="@+id/list_item_car_event" />
     </ScrollView>
@@ -59,10 +60,32 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_weight="0"
+        android:gravity="center"
+        android:id="@+id/list_item_add_new">
+
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/list_item_image_add_event"
+            android:src="@android:drawable/ic_input_add" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Add new event"
+            android:id="@+id/list_item_btn_add_event"
+            android:textAppearance="?android:textAppearanceLarge" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
         android:layout_marginLeft="10dp"
         android:layout_marginRight="10dp"
         android:layout_marginTop="5dp"
-        android:layout_marginBottom="3dp">
+        android:layout_marginBottom="3dp"
+        android:layout_weight="0">
 
         <Button
             android:layout_width="wrap_content"

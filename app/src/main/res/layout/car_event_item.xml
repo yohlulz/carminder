@@ -7,14 +7,31 @@
     android:paddingLeft="10dp"
     android:paddingRight="10dp">
 
-    <TextView
-        android:layout_width="match_parent"
+    <LinearLayout
+        android:orientation="vertical"
+        android:layout_width="0dp"
         android:layout_height="match_parent"
-        android:text="RCA"
-        android:id="@+id/item_name"
-        android:textAppearance="?android:textAppearanceLarge"
-        android:gravity="center"
-        android:layout_weight="1" />
+        android:layout_weight="1"
+        android:id="@+id/item_name_container">
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="RCA"
+            android:id="@+id/item_name"
+            android:textAppearance="?android:textAppearanceLarge"
+            android:gravity="center" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/item_description"
+            android:textAppearance="?android:textAppearanceSmall"
+            android:singleLine="false"
+            android:elegantTextHeight="false"
+            android:gravity="center_horizontal"
+            android:text="description" />
+    </LinearLayout>
 
     <LinearLayout
         android:orientation="vertical"
@@ -22,8 +39,7 @@
         android:layout_height="wrap_content"
         android:gravity="center"
         android:background="@drawable/ic_date"
-        android:id="@+id/item_picker"
-        android:layout_weight="0">
+        android:id="@+id/item_picker">
 
         <TextView
             android:layout_width="wrap_content"
