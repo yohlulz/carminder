@@ -8,6 +8,7 @@ import android.widget.Toast;
 
 import java.text.DateFormat;
 import java.text.ParseException;
+import java.util.Collection;
 import java.util.Date;
 
 import to.uk.carminder.app.data.EventSuggestionProvider;
@@ -22,6 +23,10 @@ public class Utility {
 
     public static boolean isStringNullOrEmpty(String value) {
         return (value == null) || value.trim().isEmpty();
+    }
+
+    public static boolean isCollectionNullOrEmpty(Collection<?> values) {
+        return (values == null) || values.isEmpty();
     }
 
     public static boolean isNetworkConnected(Context context) {

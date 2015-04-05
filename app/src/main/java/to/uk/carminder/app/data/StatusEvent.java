@@ -13,7 +13,10 @@ import org.json.JSONObject;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.util.Collections;
 import java.util.Date;
+import java.util.HashSet;
+import java.util.Set;
 
 import to.uk.carminder.app.Utility;
 import to.uk.carminder.app.service.CheckStatusService;
@@ -51,6 +54,7 @@ public class StatusEvent implements Parcelable {
         }
     };
 
+    public static final String FIELD_ID = EventContract.StatusEntry._ID;
     public static final String FIELD_CAR_NUMBER = EventContract.StatusEntry.COLUMN_CAR_NUMBER;
     public static final String FIELD_NAME = EventContract.StatusEntry.COLUMN_EVENT_NAME;
     public static final String FIELD_DESCRIPTION = EventContract.StatusEntry.COLUMN_DESCRIPTION;
@@ -118,6 +122,10 @@ public class StatusEvent implements Parcelable {
         values.put(key, value);
     }
 
+    public void put(String key, Integer value) {
+        values.put(key, value);
+    }
+
     public boolean isValid() {
         return !Utility.isStringNullOrEmpty(getExpireDate());
     }
@@ -173,6 +181,22 @@ public class StatusEvent implements Parcelable {
         values.writeToParcel(dest, flags);
     }
 
+    @Override
+    public int hashCode() {
+        return values.hashCode();
+    }
+
+    @Override
+    public boolean equals(Object that) {
+        if (that == this) {
+            return true;
+        }
+        if (that instanceof StatusEvent) {
+            return values.equals(((StatusEvent) that).values);
+        }
+        return false;
+    }
+
     public static StatusEvent fromJSON(String data) {
         if (Utility.isStringNullOrEmpty(data)) {
             return INVALID_EVENT;
@@ -192,17 +216,21 @@ public class StatusEvent implements Parcelable {
         return INVALID_EVENT;
     }
 
-    public static StatusEvent fromCursor(Cursor cursor) {
-        if (cursor != null && cursor.moveToFirst()) {
+    public static Set<StatusEvent> fromCursor(Cursor cursor) {
+        if (cursor == null) {
+            return Collections.emptySet();
+        }
+        final Set<StatusEvent> result = new HashSet<>();
+        while (cursor.moveToNext()) {
             final StatusEvent event = new StatusEvent(cursor.getString(INDEX_COLUMN_EVENT_NAME),
-                                                      cursor.getLong(INDEX_COLUMN_START_DATE),
-                                                      cursor.getLong(INDEX_COLUMN_END_DATE),
-                                                      cursor.getString(INDEX_COLUMN_CAR_NUMBER),
-                                                      cursor.getString(INDEX_COLUMN_DESCRIPTION));
-//            cursor.close();
-            return event;
+                                                        cursor.getLong(INDEX_COLUMN_START_DATE),
+                                                        cursor.getLong(INDEX_COLUMN_END_DATE),
+                                                        cursor.getString(INDEX_COLUMN_CAR_NUMBER),
+                                                        cursor.getString(INDEX_COLUMN_DESCRIPTION));
+            event.put(FIELD_ID, cursor.getInt(INDEX_COLUMN_ID));
+            result.add(event);
         }
 
-        return null;
+        return result;
     }
 }

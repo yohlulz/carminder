@@ -14,8 +14,10 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.Set;
 
 import to.uk.carminder.app.R;
 import to.uk.carminder.app.Utility;
@@ -154,12 +156,31 @@ public class CheckStatusService extends IntentService {
                                                EventProvider.SELECTION_CAR_PLATE,
                                                new String[] {carPlate},
                                                null);
-            final StatusEvent event = StatusEvent.fromCursor(statusCursor);
+            final Set<StatusEvent> events = StatusEvent.fromCursor(statusCursor);
             deleteOldData(context);
-            if (event != null) {
+
+//            final StatusEvent event = new StatusEvent();
+//            event.put(StatusEvent.FIELD_CAR_NUMBER, carPlate);
+//            event.put(StatusEvent.FIELD_DESCRIPTION, "Test");
+//            event.put(StatusEvent.FIELD_NAME, "ITP");
+//            event.put(StatusEvent.FIELD_START_DATE, "" + new Date().getTime());
+//            event.put(StatusEvent.FIELD_END_DATE, "" + new Date().getTime());
+//            final StatusEvent event1 = new StatusEvent();
+//            event1.put(StatusEvent.FIELD_CAR_NUMBER, carPlate);
+//            event1.put(StatusEvent.FIELD_DESCRIPTION, "Test");
+//            event1.put(StatusEvent.FIELD_NAME, "RCA");
+//            event1.put(StatusEvent.FIELD_START_DATE, "" + new Date().getTime());
+//            event1.put(StatusEvent.FIELD_END_DATE, "" + new Date().getTime());
+//
+//            context.getContentResolver().insert(EventContract.StatusEntry.CONTENT_URI, event.getContentValues());
+//            context.getContentResolver().insert(EventContract.StatusEntry.CONTENT_URI, event1.getContentValues());
+
+
+            if (!Utility.isCollectionNullOrEmpty(events)) {
                 final Intent statusIntent = new Intent();
                 statusIntent.setAction(action);
-                statusIntent.putExtra(FIELD_DATA, event);
+                /* this should contain only one element */
+                statusIntent.putExtra(FIELD_DATA, events.iterator().next());
                 return statusIntent;
             }
 

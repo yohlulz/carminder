@@ -17,14 +17,6 @@
         android:paddingBottom="6dp"
         android:layout_marginBottom="5dp">
 
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Car number plate"
-            android:id="@+id/list_item_car_name_label"
-            android:layout_weight="0"
-            android:gravity="center_vertical" />
-
         <EditText
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -33,13 +25,13 @@
             android:layout_marginLeft="13dp"
             android:layout_marginRight="13dp"
             android:textAppearance="?android:textAppearanceLarge"
-            android:text="cj90moa"
             android:textStyle="bold"
             android:gravity="center"
             android:singleLine="true"
             android:inputType="textCapCharacters"
             android:selectAllOnFocus="true"
-            android:focusableInTouchMode="true" />
+            android:focusableInTouchMode="true"
+            android:hint="@string/hint_car_number_plate" />
 
     </LinearLayout>
 
@@ -47,6 +39,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:id="@+id/scrollView"
+        android:fillViewport="true"
         android:layout_weight="1">
 
         <ListView
@@ -59,9 +52,9 @@
         android:orientation="horizontal"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_weight="0"
         android:gravity="center"
-        android:id="@+id/list_item_add_new">
+        android:id="@+id/list_item_add_new"
+        android:layout_weight="0">
 
         <ImageView
             android:layout_width="wrap_content"

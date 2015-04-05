@@ -1,58 +1,52 @@
 package to.uk.carminder.app.data.adapter;
 
 import android.content.Context;
-import android.database.Cursor;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.CursorAdapter;
+import android.widget.ArrayAdapter;
 import android.widget.EditText;
-import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import java.util.List;
+
 import to.uk.carminder.app.R;
-import to.uk.carminder.app.Utility;
 import to.uk.carminder.app.data.StatusEvent;
 
-public class CarEventsAdapter extends CursorAdapter{
+public class CarEventsAdapter extends ArrayAdapter<StatusEvent> {
     private static final String LOG_TAG = CarEventsAdapter.class.getSimpleName();
 
-    private View view;
     private EditText carNumberView;
+    private final boolean showCarPlate;
 
-    public CarEventsAdapter(Context context, Cursor c, int flags) {
-        super(context, c, flags);
+    public CarEventsAdapter(Context context, List<StatusEvent> events) {
+        this(context, events, false);
+    }
+
+    public CarEventsAdapter(Context context, List<StatusEvent> events, boolean showCarPlate) {
+        super(context, 0, events);
+        this.showCarPlate = showCarPlate;
+    }
+
+    public void setCarNumberView(EditText carNumberView) {
+        this.carNumberView = carNumberView;
     }
 
     @Override
-    public View newView(final Context context, Cursor cursor, ViewGroup parent) {
-        view = LayoutInflater.from(context).inflate(R.layout.car_event_item, parent, false);
-        view.setTag(new ViewHolder(view));
+    public View getView(int position, View convertView, ViewGroup parent) {
+        final StatusEvent event = getItem(position);
+        final ViewHolder holder;
+        if (convertView == null) {
+            convertView = LayoutInflater.from(getContext()).inflate(R.layout.car_event_item, parent, false);
+            holder = new ViewHolder(convertView);
+            convertView.setTag(holder);
 
-        view.findViewById(R.id.item_picker).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Utility.notifyUser(context, "Pick date TODO");
-
-            }
-        });
-        view.findViewById(R.id.item_name_container).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Utility.notifyUser(context, "Modify event");
-            }
-        });
-
-        return view;
-    }
-
-    @Override
-    public void bindView(View view, Context context, Cursor cursor) {
-        final ViewHolder holder = (ViewHolder) view.getTag();
-        final StatusEvent event = StatusEvent.fromCursor(cursor);
+        } else {
+            holder = (ViewHolder) convertView.getTag();
+        }
 
         holder.itemName.setText(event.getAsString(StatusEvent.FIELD_NAME));
-        holder.itemDescription.setText(event.getAsString(StatusEvent.FIELD_DESCRIPTION));
+        holder.itemDescription.setText(showCarPlate ? event.getAsString(StatusEvent.FIELD_CAR_NUMBER) : event.getAsString(StatusEvent.FIELD_DESCRIPTION));
         holder.itemPickerMonth.setText(event.getExpireMonth());
         holder.itemPickerDay.setText(event.getExpireDay());
         holder.itemPickerYear.setText(event.getExpireYear());
@@ -60,10 +54,8 @@ public class CarEventsAdapter extends CursorAdapter{
         if (carNumberView != null) {
             carNumberView.setText(event.getAsString(StatusEvent.FIELD_CAR_NUMBER));
         }
-    }
 
-    public void setCarNumberView(EditText carNumberView) {
-        this.carNumberView = carNumberView;
+        return convertView;
     }
 
     private static class ViewHolder {
