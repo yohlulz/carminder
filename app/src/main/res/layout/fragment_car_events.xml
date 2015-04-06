@@ -17,6 +17,11 @@
         android:paddingBottom="6dp"
         android:layout_marginBottom="5dp">
 
+        <!-- Dummy item to prevent AutoCompleteTextView from receiving focus -->
+        <LinearLayout
+            android:focusable="true" android:focusableInTouchMode="true"
+            android:layout_width="0px" android:layout_height="0px" />
+
         <EditText
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -30,8 +35,11 @@
             android:singleLine="true"
             android:inputType="textCapCharacters"
             android:selectAllOnFocus="true"
-            android:focusableInTouchMode="true"
-            android:hint="@string/hint_car_number_plate" />
+            android:hint="@string/hint_car_number_plate"
+            android:editable="true"
+            android:focusable="true"
+            android:nextFocusUp="@id/list_item_car_name"
+            android:nextFocusLeft="@id/list_item_car_name" />
 
     </LinearLayout>
 

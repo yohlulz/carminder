@@ -105,7 +105,7 @@ public class StatusEvent implements Parcelable {
         this.values = values;
     }
 
-    private StatusEvent(String name, Long startDate, Long expireDate, String carNumber, String description) {
+    public StatusEvent(String name, Long startDate, Long expireDate, String carNumber, String description) {
         values = new ContentValues();
         values.put(FIELD_NAME, name);
         values.put(FIELD_START_DATE, startDate);
@@ -118,11 +118,19 @@ public class StatusEvent implements Parcelable {
         return values.getAsString(key);
     }
 
+    public Long getAsLong(String key) {
+        return values.getAsLong(key);
+    }
+
     public void put(String key, String value) {
         values.put(key, value);
     }
 
     public void put(String key, Integer value) {
+        values.put(key, value);
+    }
+
+    public void put(String key, Long value) {
         values.put(key, value);
     }
 

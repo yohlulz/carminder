@@ -11,6 +11,7 @@ import android.widget.TextView;
 import java.util.List;
 
 import to.uk.carminder.app.R;
+import to.uk.carminder.app.Utility;
 import to.uk.carminder.app.data.StatusEvent;
 
 public class CarEventsAdapter extends ArrayAdapter<StatusEvent> {
@@ -46,7 +47,13 @@ public class CarEventsAdapter extends ArrayAdapter<StatusEvent> {
         }
 
         holder.itemName.setText(event.getAsString(StatusEvent.FIELD_NAME));
-        holder.itemDescription.setText(showCarPlate ? event.getAsString(StatusEvent.FIELD_CAR_NUMBER) : event.getAsString(StatusEvent.FIELD_DESCRIPTION));
+        final String description = showCarPlate ? event.getAsString(StatusEvent.FIELD_CAR_NUMBER) : event.getAsString(StatusEvent.FIELD_DESCRIPTION);
+        if (Utility.isStringNullOrEmpty(description)) {
+            holder.itemDescription.setVisibility(View.GONE);
+        } else {
+            holder.itemDescription.setText(description);
+            holder.itemDescription.setVisibility(View.VISIBLE);
+        }
         holder.itemPickerMonth.setText(event.getExpireMonth());
         holder.itemPickerDay.setText(event.getExpireDay());
         holder.itemPickerYear.setText(event.getExpireYear());

@@ -18,6 +18,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
+import android.widget.Button;
 import android.widget.ListView;
 import android.widget.Toast;
 
@@ -88,40 +89,8 @@ public class StatusActivity extends ActionBarActivity {
         private StatusEventAdapter adapter;
         private StatusReceiver receiver;
         private SearchRecentSuggestions suggestions;
-
-
-        public StatusFragment() {
-        }
-
-        @Override
-        public void onCreateContextMenu(ContextMenu menu, View v, ContextMenu.ContextMenuInfo menuInfo) {
-            getActivity().getMenuInflater().inflate(R.menu.context_status_item, menu);
-            super.onCreateContextMenu(menu, v, menuInfo);
-        }
-
-        @Override
-        public boolean onContextItemSelected(MenuItem item) {
-            final AdapterView.AdapterContextMenuInfo info = (AdapterView.AdapterContextMenuInfo) item.getMenuInfo();
-
-            switch (item.getItemId()) {
-                case R.id.status_add_event:
-                    final StatusEvent event = adapter.getItem(info.position);
-                    if (event != null && event.isValid()) {
-                        final Intent eventsIntent = new Intent(getActivity(), CarEventsActivity.class);
-                        eventsIntent.putExtra(EventsModifierService.FIELD_DATA, event.getAsString(StatusEvent.FIELD_CAR_NUMBER));
-                        startActivity(eventsIntent);
-
-                    } else {
-                        Toast.makeText(getActivity(), getString(R.string.message_connect_to_internet), Toast.LENGTH_LONG).show();
-                    }
-                    break;
-
-                default:
-                    return super.onContextItemSelected(item);
-            }
-
-            return true;
-        }
+        private StatusEvent receivedEvent;
+        private Button addEventButton;
 
         @Override
         public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -131,7 +100,17 @@ public class StatusActivity extends ActionBarActivity {
             adapter = new StatusEventAdapter(getActivity(), new ArrayList<StatusEvent>());
             final ListView eventsView = (ListView) view.findViewById(R.id.listView_event);
             eventsView.setAdapter(adapter);
-            registerForContextMenu(eventsView);
+            addEventButton = (Button) view.findViewById(R.id.button_add_event_from_status);
+            addEventButton.setVisibility(View.GONE);
+            addEventButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    final Intent eventsIntent = new Intent(getActivity(), CarEventsActivity.class);
+                    eventsIntent.putExtra(EventsModifierService.FIELD_DATA, receivedEvent.getAsString(StatusEvent.FIELD_CAR_NUMBER));
+                    startActivity(eventsIntent);
+                }
+            });
+
             return view;
         }
 
@@ -165,6 +144,8 @@ public class StatusActivity extends ActionBarActivity {
                         final StatusEvent event = intent.getParcelableExtra(CheckStatusService.FIELD_DATA);
                         if (suggestions != null && event != null && event.isValid()) {
                             suggestions.saveRecentQuery(event.getAsString(StatusEvent.FIELD_CAR_NUMBER), null);
+                            receivedEvent = event;
+                            addEventButton.setVisibility(View.VISIBLE);
                         }
                         adapter.clear();
                         adapter.add(event);

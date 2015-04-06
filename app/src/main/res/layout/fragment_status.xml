@@ -8,8 +8,21 @@
     android:orientation="vertical">
 
     <ListView
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/listView_event"
+        android:layout_weight="1" />
+
+    <Button
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:id="@+id/listView_event" />
+        android:text="Add event"
+        android:id="@+id/button_add_event_from_status"
+        android:layout_weight="0"
+        android:layout_gravity="center_horizontal"
+        android:textAppearance="?android:textAppearanceLarge"
+        android:textStyle="bold"
+        android:paddingLeft="20dp"
+        android:paddingRight="20dp" />
 
 </LinearLayout>

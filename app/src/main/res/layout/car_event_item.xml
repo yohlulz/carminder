@@ -20,7 +20,9 @@
             android:text="RCA"
             android:id="@+id/item_name"
             android:textAppearance="?android:textAppearanceLarge"
-            android:gravity="center" />
+            android:gravity="center"
+            android:layout_weight="1"
+            android:layout_gravity="center_vertical" />
 
         <TextView
             android:layout_width="match_parent"
@@ -30,7 +32,8 @@
             android:singleLine="false"
             android:elegantTextHeight="false"
             android:gravity="center_horizontal"
-            android:text="description" />
+            android:text="description"
+            android:layout_weight="0" />
     </LinearLayout>
 
     <LinearLayout
