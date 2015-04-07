@@ -13,8 +13,6 @@
         android:layout_height="wrap_content"
         android:background="@android:color/darker_gray"
         android:paddingLeft="20dp"
-        android:paddingTop="6dp"
-        android:paddingBottom="6dp"
         android:layout_marginBottom="5dp">
 
         <!-- Dummy item to prevent AutoCompleteTextView from receiving focus -->
@@ -27,9 +25,7 @@
             android:layout_height="wrap_content"
             android:id="@+id/list_item_car_name"
             android:layout_weight="1"
-            android:layout_marginLeft="13dp"
             android:layout_marginRight="13dp"
-            android:textAppearance="?android:textAppearanceLarge"
             android:textStyle="bold"
             android:gravity="center"
             android:singleLine="true"
@@ -60,30 +56,8 @@
         android:orientation="horizontal"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:gravity="center"
-        android:id="@+id/list_item_add_new"
-        android:layout_weight="0">
-
-        <ImageView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:id="@+id/list_item_image_add_event"
-            android:src="@android:drawable/ic_input_add" />
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Add new event"
-            android:id="@+id/list_item_btn_add_event"
-            android:textAppearance="?android:textAppearanceLarge" />
-    </LinearLayout>
-
-    <LinearLayout
-        android:orientation="horizontal"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginLeft="10dp"
-        android:layout_marginRight="10dp"
+        android:layout_marginLeft="5dp"
+        android:layout_marginRight="5dp"
         android:layout_marginTop="5dp"
         android:layout_marginBottom="3dp"
         android:layout_weight="0">
@@ -96,6 +70,29 @@
             android:layout_weight="1"
             android:layout_marginLeft="10dp"
             android:layout_marginRight="10dp" />
+
+        <LinearLayout
+            android:orientation="horizontal"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/list_item_add_new"
+            android:layout_weight="0"
+            android:gravity="fill_horizontal"
+            android:layout_gravity="center_vertical">
+
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/list_item_image_add_event"
+                android:src="@android:drawable/ic_input_add" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/action_add_event"
+                android:id="@+id/list_item_btn_add_event"
+                android:textAppearance="?android:textAppearanceLarge" />
+        </LinearLayout>
 
         <Button
             android:layout_width="wrap_content"

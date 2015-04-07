@@ -25,17 +25,17 @@ import android.widget.ListView;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Set;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ConcurrentMap;
 
 import to.uk.carminder.app.data.EventContract;
+import to.uk.carminder.app.data.EventsContainer;
 import to.uk.carminder.app.data.adapter.CarEventsAdapter;
 import to.uk.carminder.app.data.StatusEvent;
-import to.uk.carminder.app.service.EventsModifierService;
 
 
 public class CarEventsActivity extends ActionBarActivity {
     private static final String LOG_TAG = CarEventsActivity.class.getSimpleName();
+    private static final String FIELD_DIALOG_SHOWN = "FIELD_DETAILS_DIALOG_SHOWN";
+    private static final String FIELD_STATUS_EVENT_DETAILS = "FIELD_DETAILS_STATUS_EVENT";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -43,11 +43,10 @@ public class CarEventsActivity extends ActionBarActivity {
         setContentView(R.layout.activity_car_events);
         if (savedInstanceState == null) {
             final CarEventsFragment fragment = new CarEventsFragment();
-            //TODO extract field_data to utility
-            final String carPlate = (getIntent() != null) ? getIntent().getStringExtra(EventsModifierService.FIELD_DATA) : null;
+            final String carPlate = (getIntent() != null) ? getIntent().getStringExtra(Utility.FIELD_DATA) : null;
             if (!Utility.isStringNullOrEmpty(carPlate)) {
                 final Bundle bundle = new Bundle();
-                bundle.putString(EventsModifierService.FIELD_DATA, carPlate);
+                bundle.putString(Utility.FIELD_DATA, carPlate);
                 fragment.setArguments(bundle);
             }
 
@@ -81,10 +80,10 @@ public class CarEventsActivity extends ActionBarActivity {
         private CarEventsAdapter adapter;
         private EditText carNumberView;
         private String carPlate;
-        private final ConcurrentMap<StatusEvent, EventState> eventToState = new ConcurrentHashMap<>();
-
-        public CarEventsFragment() {
-        }
+        private final EventsContainer eventsContainer = new EventsContainer();
+        private AlertDialog detailsDialog;
+        private StatusEvent detailsEvent;
+        private boolean detailsDialogShown;
 
         @Override
         public View onCreateView(final LayoutInflater inflater, ViewGroup container, final Bundle savedInstanceState) {
@@ -96,7 +95,7 @@ public class CarEventsActivity extends ActionBarActivity {
             registerForContextMenu(view);
 
             carNumberView = (EditText) rootView.findViewById(R.id.list_item_car_name);
-            carPlate = getArguments() != null ? getArguments().getString(EventsModifierService.FIELD_DATA) : null;
+            carPlate = getArguments() != null ? getArguments().getString(Utility.FIELD_DATA) : null;
             if (!Utility.isStringNullOrEmpty(carPlate)) {
                 carNumberView.setText(carPlate);
             }
@@ -106,15 +105,15 @@ public class CarEventsActivity extends ActionBarActivity {
                 @Override
                 public void onClick(View v) {
                     /* discard any changes */
-                    eventToState.clear();
-                    getActivity().onBackPressed();
+                    eventsContainer.clear();
+                    getActivity().onNavigateUp();
                 }
             });
             rootView.findViewById(R.id.btn_events_save).setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
                     Utility.notifyUser(getActivity(), "Eh");
-                    getActivity().onBackPressed();
+                    getActivity().onNavigateUp();
 
                 }
             });
@@ -125,12 +124,18 @@ public class CarEventsActivity extends ActionBarActivity {
                 }
             });
 
-
-
             return rootView;
         }
 
-        private void showDetailsView(Bundle savedInstanceState, final StatusEvent event) {
+        @Override
+        public void onSaveInstanceState(Bundle outState) {
+            super.onSaveInstanceState(outState);
+            outState.putParcelable(Utility.FIELD_CAR_EVENTS, eventsContainer);
+            outState.putBoolean(FIELD_DIALOG_SHOWN, detailsDialogShown);
+            outState.putParcelable(FIELD_STATUS_EVENT_DETAILS, detailsEvent);
+        }
+
+        private void showDetailsView(final Bundle savedInstanceState, final StatusEvent event) {
             final View dialogView = getLayoutInflater(savedInstanceState).inflate(R.layout.manage_event_item, null);
             final EditText eventNameView = (EditText) dialogView.findViewById(R.id.edit_event_item_name);
             final EditText eventDescriptionView = (EditText) dialogView.findViewById(R.id.edit_event_item_description);
@@ -149,7 +154,7 @@ public class CarEventsActivity extends ActionBarActivity {
                 datePicker.updateDate(cal.get(Calendar.YEAR), cal.get(Calendar.MONTH), cal.get(Calendar.DAY_OF_MONTH));
             }
 
-            new AlertDialog.Builder(getActivity()).setTitle(R.string.title_dialog_manage_car_event)
+            detailsDialog = new AlertDialog.Builder(getActivity()).setTitle(R.string.title_dialog_manage_car_event)
                     .setIcon(R.drawable.car_launcher)
                     .setView(dialogView)
                     .setPositiveButton(R.string.action_save, new DialogInterface.OnClickListener() {
@@ -163,33 +168,41 @@ public class CarEventsActivity extends ActionBarActivity {
                                 return;
                             }
                             if (event != null) { // modify existing
-                                eventToState.remove(event);
+                                eventsContainer.remove(event, false);
 
                                 event.put(StatusEvent.FIELD_NAME, eventName);
                                 event.put(StatusEvent.FIELD_DESCRIPTION, eventDescription);
                                 event.put(StatusEvent.FIELD_END_DATE, expireDate);
-                                eventToState.put(event, EventState.MODIFIED);
+                                eventsContainer.add(event, EventsContainer.EventState.MODIFIED);
                                 adapter.notifyDataSetChanged();
 
                             } else { // add new
                                 final StatusEvent addedEvent = new StatusEvent(eventName,
-                                                                               expireDate, expireDate,
-                                                                               carPlate,
-                                                                               eventDescription);
-                                if (eventToState.put(addedEvent, EventState.ADDED) == null) {
+                                        expireDate, expireDate,
+                                        carPlate,
+                                        eventDescription);
+                                if (eventsContainer.add(addedEvent, EventsContainer.EventState.ADDED)) {
                                     adapter.add(addedEvent);
                                 }
                             }
+                            detailsDialogShown = false;
+                            detailsEvent = null;
                         }
                     })
                     .setNegativeButton(R.string.action_cancel, new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialog, int which) {
-                            dialog.dismiss();
+                            detailsDialog.dismiss();
+                            detailsDialog = null;
+                            detailsDialogShown = false;
+                            detailsEvent = null;
+
                         }
                     })
-                    .create()
-                    .show();
+                    .create();
+            detailsDialogShown = true;
+            detailsEvent = event;
+            detailsDialog.show();
         }
 
         @Override
@@ -209,13 +222,7 @@ public class CarEventsActivity extends ActionBarActivity {
 
                 case R.id.status_delete_event:
                     final StatusEvent deleteEvent = adapter.getItem(info.position);
-                    final EventState state = eventToState.get(deleteEvent);
-                    /* event not yet saved to DB, just remove it from structures */
-                    if (state == EventState.ADDED) {
-                        eventToState.remove(deleteEvent);
-                    } else { // mark it for deletion
-                        eventToState.put(deleteEvent, EventState.DELETED);
-                    }
+                    eventsContainer.remove(deleteEvent, true);
                     adapter.remove(deleteEvent);
                     adapter.notifyDataSetChanged();
                     break;
@@ -227,9 +234,36 @@ public class CarEventsActivity extends ActionBarActivity {
         }
 
         @Override
+        public void onCreate(Bundle savedInstanceState) {
+            super.onCreate(savedInstanceState);
+            if (savedInstanceState != null) {
+                this.eventsContainer.update((EventsContainer) savedInstanceState.getParcelable(Utility.FIELD_CAR_EVENTS));
+                if (savedInstanceState.getBoolean(FIELD_DIALOG_SHOWN, false)) {
+                    showDetailsView(savedInstanceState, (StatusEvent) savedInstanceState.getParcelable(FIELD_STATUS_EVENT_DETAILS));
+                }
+            }
+        }
+
+        @Override
         public void onActivityCreated(@Nullable Bundle savedInstanceState) {
             getLoaderManager().initLoader(STATUS_LOADER, null, this);
             super.onActivityCreated(savedInstanceState);
+        }
+
+        @Override
+        public void onResume() {
+            if (detailsDialog != null) {
+                detailsDialog.show();
+            }
+            super.onResume();
+        }
+
+        @Override
+        public void onPause() {
+            if (detailsDialog != null) {
+                detailsDialog.dismiss();
+            }
+            super.onPause();
         }
 
         @Override
@@ -245,11 +279,13 @@ public class CarEventsActivity extends ActionBarActivity {
         @Override
         public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
             final Set<StatusEvent> events = StatusEvent.fromCursor(data);
-            data.close();
-            adapter.addAll(events);
             for (StatusEvent event : events) {
-                eventToState.put(event, EventState.UNCHANGED);
+                eventsContainer.add(event, EventsContainer.EventState.UNCHANGED);
             }
+
+            adapter.clear();
+            adapter.addAll(eventsContainer.getAllEvents());
+
         }
 
         @Override
@@ -257,8 +293,6 @@ public class CarEventsActivity extends ActionBarActivity {
             adapter.clear();
         }
     }
-
-    private static enum EventState {
-        ADDED, MODIFIED, DELETED, UNCHANGED;
-    }
 }
+
+
