@@ -10,6 +10,8 @@ public class EventContract {
     public static final Uri BASE_CONTENT_URI = Uri.parse("content://" + CONTENT_AUTHORITY);
 
     public static final String PATH_STATUS = "status";
+    public static final String GROUP_BY = "group";
+    public static final String SELECT = "view";
 
     public static class StatusEntry implements BaseColumns {
         public static final String TABLE_NAME = "status";
@@ -30,11 +32,16 @@ public class EventContract {
 
 
         public static Uri buildStatusByCarPlateUri(String carPlate) {
-            return CONTENT_URI.buildUpon().appendPath(carPlate).build();
+            return CONTENT_URI.buildUpon().appendPath(SELECT).appendPath(carPlate).build();
+        }
+
+        public static Uri buildGroupByUri(String columnName) {
+            return CONTENT_URI.buildUpon().appendPath(GROUP_BY).appendPath(columnName).build();
         }
 
         public static String getCarPlateFromUri(Uri uri) {
-            return uri.getPathSegments().get(1);
+            return uri.getPathSegments().get(2);
         }
+
     }
 }

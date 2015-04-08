@@ -10,8 +10,9 @@ import android.database.sqlite.SQLiteOpenHelper;
 import android.net.Uri;
 
 public class EventProvider extends ContentProvider {
-    private static final int TYPE_STATUS = 100;
-    private static final int TYPE_STATUS_BY_CAR_NUMBER = 200;
+    private static final int TYPE_STATUS = 1;
+    private static final int TYPE_STATUS_BY_CAR_NUMBER = 2;
+    private static final int TYPE_STATUS_GROUP_BY = 3;
 
     public static final String SELECTION_CAR_PLATE = EventContract.StatusEntry.COLUMN_CAR_NUMBER + " LIKE ?";
 
@@ -34,7 +35,11 @@ public class EventProvider extends ContentProvider {
                 break;
 
             case TYPE_STATUS_BY_CAR_NUMBER:
-                result = getStatusEntryByCarNumber(uri, projection, sortOrder);
+                result = getStatusEntriesByCarNumber(uri, projection, sortOrder);
+                break;
+
+            case TYPE_STATUS_GROUP_BY:
+                result = getStatusEntriesGroupedByCarNumber(uri, projection, sortOrder);
                 break;
 
             default:
@@ -45,7 +50,7 @@ public class EventProvider extends ContentProvider {
         return result;
     }
 
-    private Cursor getStatusEntryByCarNumber(Uri uri, String[] projection, String sortOrder) {
+    private Cursor getStatusEntriesByCarNumber(Uri uri, String[] projection, String sortOrder) {
         final String carPlate = EventContract.StatusEntry.getCarPlateFromUri(uri);
 
         return dbHelper.getReadableDatabase().query(EventContract.StatusEntry.TABLE_NAME,
@@ -57,13 +62,24 @@ public class EventProvider extends ContentProvider {
                                                     sortOrder);
     }
 
+    private Cursor getStatusEntriesGroupedByCarNumber(Uri uri, String[] projection, String sortOrder) {
+        final String carPlate = EventContract.StatusEntry.getCarPlateFromUri(uri);
+
+        return dbHelper.getReadableDatabase().query(EventContract.StatusEntry.TABLE_NAME,
+                                                                              projection,
+                                                                              null,
+                                                                              null,
+                                                                              carPlate,
+                                                                              null,
+                                                                              sortOrder);
+    }
+
     @Override
     public String getType(Uri uri) {
         switch (URI_MATCHER.match(uri)) {
             case TYPE_STATUS:
-                return EventContract.StatusEntry.CONTENT_TYPE;
-
             case TYPE_STATUS_BY_CAR_NUMBER:
+            case TYPE_STATUS_GROUP_BY:
                 return EventContract.StatusEntry.CONTENT_TYPE;
 
             default:
@@ -140,7 +156,8 @@ public class EventProvider extends ContentProvider {
 
         static {
             URI_MATCHER.addURI(EventContract.CONTENT_AUTHORITY, EventContract.PATH_STATUS, TYPE_STATUS);
-            URI_MATCHER.addURI(EventContract.CONTENT_AUTHORITY, EventContract.PATH_STATUS + "/*", TYPE_STATUS_BY_CAR_NUMBER);
+            URI_MATCHER.addURI(EventContract.CONTENT_AUTHORITY, String.format("%s/%s/*", EventContract.PATH_STATUS, EventContract.GROUP_BY), TYPE_STATUS_GROUP_BY);
+            URI_MATCHER.addURI(EventContract.CONTENT_AUTHORITY, String.format("%s/%s/*", EventContract.PATH_STATUS, EventContract.SELECT), TYPE_STATUS_BY_CAR_NUMBER);
         }
     }
 }

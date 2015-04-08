@@ -2,9 +2,6 @@
     <string name="app_name">Carminder</string>
     <string name="title_settings">Settings</string>
 
-    <string name="title_section1">Section 1</string>
-    <string name="title_section2">Section 2</string>
-    <string name="title_section3">Section 3</string>
     <string name="title_dialog_manage_car_event">Manage car event</string>
 
     <string name="navigation_drawer_open">Open navigation drawer</string>
@@ -14,10 +11,12 @@
     <string name="action_settings">Settings</string>
     <string name="action_clear_history">Clear search history</string>
     <string name="action_add_event">Add event</string>
+    <string name="action_add_car">Add car</string>
     <string name="action_edit_event">Edit</string>
     <string name="action_delete_event">Delete</string>
     <string name="action_cancel">Cancel</string>
     <string name="action_save">Save</string>
+    <string name="action_view_all_car_events">View all events</string>
 
     <!-- Preferences -->
     <string name="pref_title_days">Notify before event days</string>
