@@ -54,6 +54,7 @@ public class StatusActivity extends ActionBarActivity {
 
     private void handleIntent(Intent intent) {
         if (Intent.ACTION_SEARCH.equals(intent.getAction())) {
+            //TODO start from alarm
             startService(CheckStatusService.IntentBuilder.newInstance()
                                                          .carPlate(intent.getStringExtra(SearchManager.QUERY))
                                                          .replySubject(CheckStatusService.ACTION_ON_DEMAND)
@@ -71,7 +72,6 @@ public class StatusActivity extends ActionBarActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.action_settings:
-                //TODO start from alarm
                 startActivity(new Intent(this, SettingsActivity.class));
                 break;
 

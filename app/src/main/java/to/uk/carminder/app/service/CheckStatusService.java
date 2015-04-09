@@ -159,23 +159,6 @@ public class CheckStatusService extends IntentService {
             final Set<StatusEvent> events = StatusEvent.fromCursor(statusCursor);
             deleteOldData(context);
 
-//            final StatusEvent event = new StatusEvent();
-//            event.put(StatusEvent.FIELD_CAR_NUMBER, carPlate);
-//            event.put(StatusEvent.FIELD_DESCRIPTION, "Test");
-//            event.put(StatusEvent.FIELD_NAME, "ITP");
-//            event.put(StatusEvent.FIELD_START_DATE, "" + new Date().getTime());
-//            event.put(StatusEvent.FIELD_END_DATE, "" + new Date().getTime());
-//            final StatusEvent event1 = new StatusEvent();
-//            event1.put(StatusEvent.FIELD_CAR_NUMBER, carPlate);
-//            event1.put(StatusEvent.FIELD_DESCRIPTION, "Test");
-//            event1.put(StatusEvent.FIELD_NAME, "RCA");
-//            event1.put(StatusEvent.FIELD_START_DATE, "" + new Date().getTime());
-//            event1.put(StatusEvent.FIELD_END_DATE, "" + new Date().getTime());
-//
-//            context.getContentResolver().insert(EventContract.StatusEntry.CONTENT_URI, event.getContentValues());
-//            context.getContentResolver().insert(EventContract.StatusEntry.CONTENT_URI, event1.getContentValues());
-
-
             if (!Utility.isCollectionNullOrEmpty(events)) {
                 final Intent statusIntent = new Intent();
                 statusIntent.setAction(action);

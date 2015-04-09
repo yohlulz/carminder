@@ -16,7 +16,7 @@
     <string name="action_delete_event">Delete</string>
     <string name="action_cancel">Cancel</string>
     <string name="action_save">Save</string>
-    <string name="action_view_all_car_events">View all events</string>
+    <string name="action_view_all_car_events">All events</string>
 
     <!-- Preferences -->
     <string name="pref_title_days">Notify before event days</string>

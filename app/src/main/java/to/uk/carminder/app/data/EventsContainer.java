@@ -22,7 +22,7 @@ public class EventsContainer implements Parcelable {
 
     /**
      *
-     * @return true is not value found for that key
+     * @return true is no value found for that key
      */
     public boolean add(StatusEvent event, EventState state) {
         if (EventState.UNCHANGED == state && eventToState.containsKey(event)) {
