@@ -17,6 +17,7 @@ import android.content.res.Configuration;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.util.Log;
+import android.view.ContextMenu;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -35,6 +36,8 @@ import to.uk.carminder.app.data.EventContract;
 import to.uk.carminder.app.data.StatusEvent;
 import to.uk.carminder.app.data.adapter.CarEventsAdapter;
 import to.uk.carminder.app.data.adapter.CarSummaryAdapter;
+import to.uk.carminder.app.service.CheckStatusService;
+import to.uk.carminder.app.service.EventsModifierService;
 
 public class NavigationDrawerFragment extends Fragment implements LoaderManager.LoaderCallbacks<Cursor> {
     private static final String LOG_TAG = NavigationDrawerFragment.class.getSimpleName();
@@ -105,6 +108,7 @@ public class NavigationDrawerFragment extends Fragment implements LoaderManager.
                 selectItem(position, true);
             }
         });
+        registerForContextMenu(mDrawerListView);
         mDrawerListView.setAdapter(adapter);
         if (mCurrentSelectedPosition >= 0) {
             mDrawerListView.setItemChecked(mCurrentSelectedPosition, true);
@@ -247,12 +251,46 @@ public class NavigationDrawerFragment extends Fragment implements LoaderManager.
     }
 
     @Override
+    public void onCreateContextMenu(ContextMenu menu, View v, ContextMenu.ContextMenuInfo menuInfo) {
+        getActivity().getMenuInflater().inflate(R.menu.context_status_manage_item, menu);
+        super.onCreateContextMenu(menu, v, menuInfo);
+    }
+
+    @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         if (mDrawerToggle.onOptionsItemSelected(item)) {
             return true;
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    public boolean onContextItemSelected(MenuItem item) {
+        final AdapterView.AdapterContextMenuInfo info = (AdapterView.AdapterContextMenuInfo) item.getMenuInfo();
+        final StatusEvent selectedEvent = adapter.getItem(info.position);
+
+        switch (item.getItemId()) {
+            case R.id.status_edit_event:
+                final Intent editIntent = new Intent(getActivity(), CarEventsActivity.class);
+                editIntent.putExtra(Utility.FIELD_DATA, selectedEvent.getAsString(StatusEvent.FIELD_CAR_NUMBER));
+                startActivity(editIntent);
+                break;
+
+            case R.id.status_delete_event:
+                adapter.remove(selectedEvent);
+                adapter.notifyDataSetChanged();
+                //TODO add reply listener and handle status code
+                getActivity().startService(EventsModifierService.IntentBuilder.newInstance()
+                                                                              .command(EventsModifierService.COMMAND_DELETE_CAR)
+                                                                              .data(selectedEvent)
+                                                                              .build(getActivity()));
+                break;
+
+            default:
+                return super.onContextItemSelected(item);
+        }
+        return true;
     }
 
     private void showGlobalContextActionBar() {
@@ -279,7 +317,7 @@ public class NavigationDrawerFragment extends Fragment implements LoaderManager.
     @Override
     public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
         adapter.clear();
-        adapter.addAll(StatusEvent.fromCursor(data));
+        adapter.addAll(StatusEvent.fromCursor(data, true));
 
     }
 

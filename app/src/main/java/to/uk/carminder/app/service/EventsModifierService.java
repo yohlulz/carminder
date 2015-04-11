@@ -2,13 +2,27 @@ package to.uk.carminder.app.service;
 
 
 import android.app.IntentService;
+import android.content.ContentProviderOperation;
+import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
+import android.content.OperationApplicationException;
 import android.os.Parcelable;
+import android.os.RemoteException;
 import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
+
+import to.uk.carminder.app.R;
 import to.uk.carminder.app.Utility;
+import to.uk.carminder.app.data.EventContract;
+import to.uk.carminder.app.data.EventsContainer;
 import to.uk.carminder.app.data.StatusEvent;
 
 public class EventsModifierService extends IntentService {
@@ -16,14 +30,15 @@ public class EventsModifierService extends IntentService {
     private static final String LOG_TAG = EventsModifierService.class.getSimpleName();
     public static final String ACTION_MODIFY_STATUS = "uk.to.carminder.app.MODIFY_STATUS";
 
-    public static final String COMMAND_ADD_EVENT = "add_event";
-    public static final String COMMAND_MODIFY_EVENT = "modify_event";
-    public static final String COMMAND_DELETE_EVENT = "delete_event";
-
+    public static final String COMMAND_APPLY_FROM_CONTAINER = "apply_from_container";
     public static final String COMMAND_DELETE_CAR = "delete_car";
 
+    public static final int STATUS_OK = 0;
+    public static final int STATUS_ERROR = 1;
+
+    public static final String FIELD_RESULT_STATUS = "FIELD_STATUS";
+    public static final String FIELD_RESULT_STATUS_MESSAGE = "FIELD_STATUS_MESSAGE";
     public static final String FIELD_COMMAND = "FIELD_COMMAND";
-    public static final String FIELD_DATA = "FIELD_DATA";
     public static final String FIELD_REPLY_SUBJECT = "REPLY_SUBJECT";
 
     public EventsModifierService() {
@@ -34,21 +49,63 @@ public class EventsModifierService extends IntentService {
     protected void onHandleIntent(Intent intent) {
         TaskBuilder.newInstance()
                    .command(intent.getStringExtra(FIELD_COMMAND))
-                   .event((StatusEvent) intent.getParcelableExtra(FIELD_DATA))
+                   .data(intent.getParcelableExtra(Utility.FIELD_DATA))
                    .replySubject(intent.getStringExtra(FIELD_REPLY_SUBJECT))
                    .execute(this);
     }
 
     private static class TaskBuilder {
-        private StatusEvent event;
+        private static final Map<EventsContainer.EventState, Callback> actionByState = new HashMap<>();
+
+        static {
+            actionByState.put(EventsContainer.EventState.ADDED, new Callback() {
+                @Override
+                public ArrayList<ContentProviderOperation> buildOperations(Collection<StatusEvent> events) {
+                    final ArrayList<ContentProviderOperation> operations = new ArrayList<>();
+                    for (StatusEvent event : events) {
+                        operations.add(ContentProviderOperation.newInsert(EventContract.StatusEntry.CONTENT_URI)
+                                                                .withValues(event.getContentValues())
+                                                                .build());
+                    }
+                    return operations;
+                }
+            });
+            actionByState.put(EventsContainer.EventState.MODIFIED, new Callback() {
+                @Override
+                public ArrayList<ContentProviderOperation> buildOperations(Collection<StatusEvent> events) {
+                    final ArrayList<ContentProviderOperation> operations = new ArrayList<>();
+                    for (StatusEvent event : events) {
+                        operations.add(ContentProviderOperation.newUpdate(EventContract.StatusEntry.CONTENT_URI)
+                                                                .withSelection(EventContract.StatusEntry._ID + " = ?", new String[] {event.getAsString(StatusEvent.FIELD_ID)})
+                                                                .withValues(event.getContentValues())
+                                                                .build());
+                    }
+                    return operations;
+                }
+            });
+            actionByState.put(EventsContainer.EventState.DELETED, new Callback() {
+                @Override
+                public ArrayList<ContentProviderOperation> buildOperations(Collection<StatusEvent> events) {
+                    final ArrayList<ContentProviderOperation> operations = new ArrayList<>();
+                    for (StatusEvent event : events) {
+                        operations.add(ContentProviderOperation.newDelete(EventContract.StatusEntry.CONTENT_URI)
+                                                                .withSelection(EventContract.StatusEntry._ID + " = ?", new String[] {event.getAsString(StatusEvent.FIELD_ID)})
+                                                                .build());
+                    }
+                    return operations;
+                }
+            });
+        }
+
+        private Parcelable data;
         private String command;
         private String subject;
 
         private TaskBuilder() {
         }
 
-        public TaskBuilder event(StatusEvent event) {
-            this.event = event;
+        public TaskBuilder data(Parcelable data) {
+            this.data = data;
             return this;
         }
 
@@ -64,21 +121,66 @@ public class EventsModifierService extends IntentService {
 
         public void execute(Context context) {
             if (!Utility.isStringNullOrEmpty(subject)) {
-                //TODO manage event, CRUD operations in DB
+                int status = STATUS_OK;
+                String message = Utility.EMPTY_STRING;
 
-                final Intent replyIntent = buildReplyIntent(context, subject, event);
+                switch (command) {
+                    case COMMAND_DELETE_CAR:
+                        if (data instanceof StatusEvent) {
+                            final StatusEvent event = (StatusEvent) data;
+                            final int deletedRows = context.getContentResolver().delete(EventContract.StatusEntry.CONTENT_URI,
+                                                                                        EventContract.StatusEntry.COLUMN_CAR_NUMBER + " LIKE ?",
+                                                                                        new String[] {event.getAsString(StatusEvent.FIELD_CAR_NUMBER)});
+                            Log.i(LOG_TAG, String.format("Deleted %d rows for command %s having data set to %s", deletedRows, command, event.getAsString(StatusEvent.FIELD_CAR_NUMBER)));
 
-                LocalBroadcastManager.getInstance(context).sendBroadcast(replyIntent);
+                        } else {
+                            status = STATUS_ERROR;
+                            message = context.getString(R.string.message_invalid_data);
+                        }
+                        break;
+
+                    case COMMAND_APPLY_FROM_CONTAINER:
+                        if (data instanceof EventsContainer) {
+                            final EventsContainer container = (EventsContainer) data;
+                            for (EventsContainer.EventState state : EventsContainer.EventState.values()) {
+                                if (state == EventsContainer.EventState.UNCHANGED) {
+                                    continue;
+                                }
+                                final Collection<StatusEvent> events = container.getByState(state);
+                                if (!Utility.isCollectionNullOrEmpty(events)) {
+                                    try {
+                                        context.getContentResolver().applyBatch(EventContract.CONTENT_AUTHORITY, actionByState.get(state).buildOperations(events));
+
+                                    } catch (RemoteException | OperationApplicationException ex) {
+                                        Log.w(LOG_TAG, ex.getMessage(), ex);
+                                        status = STATUS_ERROR;
+                                        message = ex.getMessage();
+                                    }
+                                }
+                            }
+
+                        } else {
+                            status = STATUS_ERROR;
+                            message = context.getString(R.string.message_invalid_data);
+                        }
+                        break;
+
+                    default:
+                        status = STATUS_ERROR;
+                        message = context.getString(R.string.message_unknown_command);
+                }
+                LocalBroadcastManager.getInstance(context).sendBroadcast(buildReplyIntent(subject, status, message));
 
             } else {
                 Log.w(LOG_TAG, "Skipping request due to empty reply subject.");
             }
         }
 
-        private Intent buildReplyIntent(Context context, String action, StatusEvent data) {
+        private Intent buildReplyIntent(String action, int statusCode, String statusMessage) {
             final Intent intent = new Intent();
             intent.setAction(action);
-            intent.putExtra(FIELD_DATA, data.getAsString(StatusEvent.FIELD_CAR_NUMBER));
+            intent.putExtra(FIELD_RESULT_STATUS, statusCode);
+            intent.putExtra(FIELD_RESULT_STATUS_MESSAGE, statusMessage);
 
             return intent;
         }
@@ -86,12 +188,16 @@ public class EventsModifierService extends IntentService {
         public static TaskBuilder newInstance() {
             return new TaskBuilder();
         }
+
+        private static interface Callback {
+            ArrayList<ContentProviderOperation> buildOperations(Collection<StatusEvent> events);
+        }
     }
 
     public static class IntentBuilder {
         private String command;
-        private StatusEvent event;
-        private String replySubject;
+        private Parcelable data;
+        private String replySubject = ACTION_MODIFY_STATUS;
 
         private IntentBuilder() {
         }
@@ -101,8 +207,8 @@ public class EventsModifierService extends IntentService {
             return this;
         }
 
-        public IntentBuilder event(StatusEvent event) {
-            this.event = event;
+        public IntentBuilder data(Parcelable data) {
+            this.data = data;
             return this;
         }
 
@@ -114,7 +220,7 @@ public class EventsModifierService extends IntentService {
         public Intent build(Context context) {
            final Intent intent = new Intent(context, EventsModifierService.class);
             intent.putExtra(FIELD_COMMAND, command);
-            intent.putExtra(FIELD_DATA, event);
+            intent.putExtra(Utility.FIELD_DATA, data);
             intent.putExtra(FIELD_REPLY_SUBJECT, replySubject);
 
             return intent;

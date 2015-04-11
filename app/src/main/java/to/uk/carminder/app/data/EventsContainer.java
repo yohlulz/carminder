@@ -5,9 +5,11 @@ import android.os.Parcel;
 import android.os.Parcelable;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
@@ -114,7 +116,7 @@ public class EventsContainer implements Parcelable {
     public static final Parcelable.Creator<EventsContainer> CREATOR = new Creator<EventsContainer>() {
         @Override
         public EventsContainer createFromParcel(Parcel source) {
-            return fromBundle(Bundle.CREATOR.createFromParcel(source));
+            return fromBundle(source.readBundle(EventsContainer.class.getClassLoader()));
         }
 
         @Override
@@ -125,7 +127,8 @@ public class EventsContainer implements Parcelable {
 
     private static EventsContainer fromBundle(Bundle bundle) {
         final EventsContainer container = new EventsContainer();
-        for (EventState state : EventState.values()) {
+        for (EventState state : Arrays.asList(EventState.ADDED)) {
+            final ArrayList<Parcelable> tmp = bundle.getParcelableArrayList(state.toString());
             final List<StatusEvent> events = bundle.getParcelableArrayList(state.toString());
             if (!Utility.isCollectionNullOrEmpty(events)) {
                 for (StatusEvent event : events) {
@@ -137,6 +140,19 @@ public class EventsContainer implements Parcelable {
         container.addedToBundle.set(true);
 
         return container;
+    }
+
+    public void ensureCarPlate(String carPlate) {
+        for (Map.Entry<StatusEvent, EventState> entry : eventToState.entrySet()) {
+            final String existingCarPlate = entry.getKey().getAsString(StatusEvent.FIELD_CAR_NUMBER);
+            if (carPlate != null && !carPlate.equals(existingCarPlate)) {
+                entry.getKey().put(StatusEvent.FIELD_CAR_NUMBER, carPlate);
+                if (entry.getValue() == EventState.UNCHANGED) {
+                    entry.setValue(EventState.MODIFIED);
+                }
+                addedToBundle.set(false);
+            }
+        }
     }
 
     public static enum EventState {

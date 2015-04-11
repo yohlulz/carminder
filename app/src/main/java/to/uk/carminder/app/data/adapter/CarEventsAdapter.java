@@ -1,6 +1,7 @@
 package to.uk.carminder.app.data.adapter;
 
 import android.content.Context;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -17,7 +18,6 @@ import to.uk.carminder.app.data.StatusEvent;
 public class CarEventsAdapter extends ArrayAdapter<StatusEvent> {
     private static final String LOG_TAG = CarEventsAdapter.class.getSimpleName();
 
-    private EditText carNumberView;
     private final boolean showCarPlate;
 
     public CarEventsAdapter(Context context, List<StatusEvent> events) {
@@ -27,10 +27,6 @@ public class CarEventsAdapter extends ArrayAdapter<StatusEvent> {
     public CarEventsAdapter(Context context, List<StatusEvent> events, boolean showCarPlate) {
         super(context, 0, events);
         this.showCarPlate = showCarPlate;
-    }
-
-    public void setCarNumberView(EditText carNumberView) {
-        this.carNumberView = carNumberView;
     }
 
     @Override
@@ -46,6 +42,11 @@ public class CarEventsAdapter extends ArrayAdapter<StatusEvent> {
             holder = (ViewHolder) convertView.getTag();
         }
 
+        if (event.requiresAttention(getContext())) {
+            final View container = convertView.findViewById(R.id.car_event_item_container);
+            container.setBackgroundColor(getContext().getResources().getColor(R.color.red_holo));
+            container.getBackground().setAlpha(100);
+        }
         holder.itemName.setText(event.getAsString(StatusEvent.FIELD_NAME));
         final String description = showCarPlate ? event.getAsString(StatusEvent.FIELD_CAR_NUMBER) : event.getAsString(StatusEvent.FIELD_DESCRIPTION);
         if (Utility.isStringNullOrEmpty(description)) {
@@ -57,10 +58,6 @@ public class CarEventsAdapter extends ArrayAdapter<StatusEvent> {
         holder.itemPickerMonth.setText(event.getExpireMonth());
         holder.itemPickerDay.setText(event.getExpireDay());
         holder.itemPickerYear.setText(event.getExpireYear());
-
-        if (carNumberView != null) {
-            carNumberView.setText(event.getAsString(StatusEvent.FIELD_CAR_NUMBER));
-        }
 
         return convertView;
     }

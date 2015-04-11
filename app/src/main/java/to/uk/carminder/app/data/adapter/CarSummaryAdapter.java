@@ -1,6 +1,7 @@
 package to.uk.carminder.app.data.adapter;
 
 import android.content.Context;
+import android.graphics.Typeface;
 import android.preference.PreferenceManager;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -37,23 +38,18 @@ public class CarSummaryAdapter extends ArrayAdapter<StatusEvent> {
         }
 
         holder.carNumber.setText(event.getAsString(StatusEvent.FIELD_CAR_NUMBER));
-        if (requiresAttention(event.getAsLong(StatusEvent.FIELD_END_DATE))) {
+        if (event.requiresAttention(getContext())) {
             holder.attentionView.setVisibility(View.VISIBLE);
+            holder.carNumber.setTextColor(getContext().getResources().getColor(R.color.red_holo));
+            holder.carNumber.setTypeface(Typeface.DEFAULT_BOLD);
         } else {
-            holder.attentionView.setVisibility(View.GONE);
+            /* keep it in layout to preserve alignment */
+            holder.attentionView.setVisibility(View.INVISIBLE);
         }
 
         return convertView;
     }
 
-    private boolean requiresAttention(Long expireDateInMillis) {
-        final int daysToNotifyBefore = Integer.parseInt(PreferenceManager.getDefaultSharedPreferences(getContext()).getString(getContext().getString(R.string.pref_key_days), getContext().getString(R.string.pref_default_days)));
-        if (expireDateInMillis == null || daysToNotifyBefore < 0) {
-            return false;
-        }
-
-        return Math.abs(new Date().getTime() - expireDateInMillis) < TimeUnit.DAYS.toMillis(daysToNotifyBefore);
-    }
 
     private static class ViewHolder {
         private TextView carNumber;

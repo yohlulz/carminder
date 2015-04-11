@@ -1,11 +1,13 @@
 package to.uk.carminder.app.data;
 
 import android.content.ContentValues;
+import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
 import android.os.Bundle;
 import android.os.Parcel;
 import android.os.Parcelable;
+import android.preference.PreferenceManager;
 import android.util.Log;
 
 import org.json.JSONException;
@@ -14,14 +16,19 @@ import org.json.JSONObject;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.Set;
+import java.util.TreeSet;
+import java.util.concurrent.TimeUnit;
 
+import to.uk.carminder.app.R;
 import to.uk.carminder.app.Utility;
 import to.uk.carminder.app.service.CheckStatusService;
 
-public class StatusEvent implements Parcelable {
+public class StatusEvent implements Parcelable, Comparable<StatusEvent> {
     private static final String LOG_TAG = StatusEvent.class.getSimpleName();
     public static final ThreadLocal<DateFormat> DAY_FORMAT = new ThreadLocal<DateFormat>() {
         @Override
@@ -78,7 +85,7 @@ public class StatusEvent implements Parcelable {
 
 
     private static final String FIELD_JSON_PLATE = "plate";
-    private static final String FIELD_JSON_MTPL = "MTPL";
+    public static final String FIELD_JSON_MTPL = "MTPL";
     private static final String FIELD_JSON_END_DATE = "endDate";
     private static final String FIELD_JSON_START_DATE = "startDate";
     private static final StatusEvent INVALID_EVENT = new StatusEvent(null, null, null, "No data received", "Server could be down, please try again later");
@@ -179,6 +186,17 @@ public class StatusEvent implements Parcelable {
         return values;
     }
 
+    public boolean requiresAttention(Context context) {
+        final Long expireDateInMillis = getAsLong(FIELD_END_DATE);
+        final int daysToNotifyBefore = Integer.parseInt(PreferenceManager.getDefaultSharedPreferences(context).getString(context.getString(R.string.pref_key_days), context.getString(R.string.pref_default_days)));
+        if (expireDateInMillis == null || daysToNotifyBefore < 0) {
+            return false;
+        }
+
+        return Math.abs(new Date().getTime() - expireDateInMillis) < TimeUnit.DAYS.toMillis(daysToNotifyBefore);
+    }
+
+
     @Override
     public int describeContents() {
         return values.describeContents();
@@ -205,6 +223,13 @@ public class StatusEvent implements Parcelable {
         return false;
     }
 
+    @Override
+    public int compareTo(StatusEvent another) {
+        final String carPlate = getAsString(FIELD_CAR_NUMBER);
+        return (carPlate != null) ? carPlate.compareTo(another.getAsString(FIELD_CAR_NUMBER)) : 0;
+    }
+
+
     public static StatusEvent fromJSON(String data) {
         if (Utility.isStringNullOrEmpty(data)) {
             return INVALID_EVENT;
@@ -225,10 +250,15 @@ public class StatusEvent implements Parcelable {
     }
 
     public static Set<StatusEvent> fromCursor(Cursor cursor) {
+        return fromCursor(cursor, false);
+
+    }
+
+    public static Set<StatusEvent> fromCursor(Cursor cursor, boolean alphabeticalOrder) {
         if (cursor == null) {
             return Collections.emptySet();
         }
-        final Set<StatusEvent> result = new HashSet<>();
+        final Set<StatusEvent> result = alphabeticalOrder ? new TreeSet<StatusEvent>() : new LinkedHashSet<StatusEvent>();
         while (cursor.moveToNext()) {
             final StatusEvent event = new StatusEvent(cursor.getString(INDEX_COLUMN_EVENT_NAME),
                                                         cursor.getLong(INDEX_COLUMN_START_DATE),
@@ -241,4 +271,5 @@ public class StatusEvent implements Parcelable {
 
         return result;
     }
+
 }

@@ -18,6 +18,7 @@ import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.Set;
+import java.util.concurrent.TimeUnit;
 
 import to.uk.carminder.app.R;
 import to.uk.carminder.app.Utility;
@@ -29,7 +30,6 @@ public class CheckStatusService extends IntentService {
     private static final String LOG_TAG = CheckStatusService.class.getSimpleName();
     public static final String ACTION_ON_DEMAND = "uk.to.carminder.app.DEMAND";
     public static final String ACTION_NOTIFICATION = "uk.to.carminder.app.NOTIFICATION";
-    public static final String FIELD_DATA = "FIELD_DATA";
 
     private static final String FIELD_MAIN_API_URL = "FIELD_API";
     private static final String FIELD_BACKUP_API_URL = "FIELD_BACKUP_API";
@@ -123,7 +123,7 @@ public class CheckStatusService extends IntentService {
                     if (Utility.isNetworkConnected(context)) {
                         final String rawData = fetchData(mainURL);
                         replyIntent = buildReplyIntent(context, replySubject, (rawData != null) ? rawData : fetchData(backupURL), false);
-                        ensureData(context, (StatusEvent) replyIntent.getParcelableExtra(FIELD_DATA));
+                        ensureData(context, (StatusEvent) replyIntent.getParcelableExtra(Utility.FIELD_DATA));
 
                     } else {
                         replyIntent = buildReplyIntent(context, replySubject, null, true);
@@ -144,7 +144,7 @@ public class CheckStatusService extends IntentService {
                 event.put(StatusEvent.FIELD_CAR_NUMBER, context.getString(R.string.message_no_internet_connection));
                 event.put(StatusEvent.FIELD_DESCRIPTION, context.getString(R.string.message_connect_to_internet));
             }
-            intent.putExtra(FIELD_DATA, event);
+            intent.putExtra(Utility.FIELD_DATA, event);
 
             return intent;
         }
@@ -153,8 +153,8 @@ public class CheckStatusService extends IntentService {
             final Cursor statusCursor = context.getContentResolver().query(
                                                EventContract.StatusEntry.CONTENT_URI,
                                                StatusEvent.COLUMNS_STATUS_ENTRY,
-                                               EventProvider.SELECTION_CAR_PLATE,
-                                               new String[] {carPlate},
+                                               EventProvider.SELECTION_CAR_PLATE + " AND " + EventContract.StatusEntry.COLUMN_EVENT_NAME + " = ?",
+                                               new String[] {carPlate, StatusEvent.FIELD_JSON_MTPL},
                                                null);
             final Set<StatusEvent> events = StatusEvent.fromCursor(statusCursor);
             deleteOldData(context);
@@ -163,7 +163,7 @@ public class CheckStatusService extends IntentService {
                 final Intent statusIntent = new Intent();
                 statusIntent.setAction(action);
                 /* this should contain only one element */
-                statusIntent.putExtra(FIELD_DATA, events.iterator().next());
+                statusIntent.putExtra(Utility.FIELD_DATA, events.iterator().next());
                 return statusIntent;
             }
 
@@ -181,7 +181,7 @@ public class CheckStatusService extends IntentService {
         private void deleteOldData(Context context) {
             final int deletedRows = context.getContentResolver().delete(EventContract.StatusEntry.CONTENT_URI,
                                                                         EventContract.StatusEntry.COLUMN_END_DATE + " < ?",
-                                                                            new String[] {"" + new Date().getTime()});
+                                                                            new String[] {"" + (new Date().getTime() - TimeUnit.DAYS.toMillis(7))});
             Log.i(LOG_TAG, String.format("Deleted %d rows from \"%s\" table", deletedRows, EventContract.StatusEntry.TABLE_NAME));
         }
 

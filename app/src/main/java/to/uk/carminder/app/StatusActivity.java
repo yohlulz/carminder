@@ -23,6 +23,7 @@ import android.widget.ListView;
 import android.widget.Toast;
 
 import java.util.ArrayList;
+import java.util.Date;
 
 import to.uk.carminder.app.data.EventSuggestionProvider;
 import to.uk.carminder.app.data.StatusEvent;
@@ -58,6 +59,7 @@ public class StatusActivity extends ActionBarActivity {
             startService(CheckStatusService.IntentBuilder.newInstance()
                                                          .carPlate(intent.getStringExtra(SearchManager.QUERY))
                                                          .replySubject(CheckStatusService.ACTION_ON_DEMAND)
+                                                         .verificationDate(new Date())
                                                          .build(this));
         }
     }
@@ -106,7 +108,7 @@ public class StatusActivity extends ActionBarActivity {
                 @Override
                 public void onClick(View v) {
                     final Intent eventsIntent = new Intent(getActivity(), CarEventsActivity.class);
-                    eventsIntent.putExtra(EventsModifierService.FIELD_DATA, receivedEvent.getAsString(StatusEvent.FIELD_CAR_NUMBER));
+                    eventsIntent.putExtra(Utility.FIELD_DATA, receivedEvent.getAsString(StatusEvent.FIELD_CAR_NUMBER));
                     startActivity(eventsIntent);
                 }
             });
@@ -141,7 +143,7 @@ public class StatusActivity extends ActionBarActivity {
             public void onReceive(Context context, Intent intent) {
                 switch (intent.getAction()) {
                     case CheckStatusService.ACTION_ON_DEMAND:
-                        final StatusEvent event = intent.getParcelableExtra(CheckStatusService.FIELD_DATA);
+                        final StatusEvent event = intent.getParcelableExtra(Utility.FIELD_DATA);
                         if (suggestions != null && event != null && event.isValid()) {
                             suggestions.saveRecentQuery(event.getAsString(StatusEvent.FIELD_CAR_NUMBER), null);
                             receivedEvent = event;

@@ -11,6 +11,9 @@ import android.support.v4.content.Loader;
 import android.support.v7.app.ActionBarActivity;
 import android.support.v4.app.Fragment;
 import android.os.Bundle;
+import android.text.Editable;
+import android.text.TextWatcher;
+import android.util.Log;
 import android.view.ContextMenu;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -30,6 +33,7 @@ import to.uk.carminder.app.data.EventContract;
 import to.uk.carminder.app.data.EventsContainer;
 import to.uk.carminder.app.data.adapter.CarEventsAdapter;
 import to.uk.carminder.app.data.StatusEvent;
+import to.uk.carminder.app.service.EventsModifierService;
 
 
 public class CarEventsActivity extends ActionBarActivity {
@@ -95,11 +99,23 @@ public class CarEventsActivity extends ActionBarActivity {
             registerForContextMenu(view);
 
             carNumberView = (EditText) rootView.findViewById(R.id.list_item_car_name);
+            carNumberView.addTextChangedListener(new TextWatcher() {
+                @Override
+                public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+                }
+                @Override
+                public void onTextChanged(CharSequence s, int start, int before, int count) {
+                }
+
+                @Override
+                public void afterTextChanged(Editable s) {
+                    carPlate = s.toString();
+                }
+            });
             carPlate = getArguments() != null ? getArguments().getString(Utility.FIELD_DATA) : null;
             if (!Utility.isStringNullOrEmpty(carPlate)) {
                 carNumberView.setText(carPlate);
             }
-            adapter.setCarNumberView(carNumberView);
 
             rootView.findViewById(R.id.btn_events_cancel).setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -112,7 +128,12 @@ public class CarEventsActivity extends ActionBarActivity {
             rootView.findViewById(R.id.btn_events_save).setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    Utility.notifyUser(getActivity(), "Eh");
+                    eventsContainer.ensureCarPlate(carPlate);
+                    //TODO add listener and handle reply status code
+                    getActivity().startService(EventsModifierService.IntentBuilder.newInstance()
+                            .command(EventsModifierService.COMMAND_APPLY_FROM_CONTAINER)
+                            .data(eventsContainer)
+                            .build(getActivity()));
                     getActivity().onNavigateUp();
 
                 }
@@ -179,7 +200,7 @@ public class CarEventsActivity extends ActionBarActivity {
                             } else { // add new
                                 final StatusEvent addedEvent = new StatusEvent(eventName,
                                         expireDate, expireDate,
-                                        carPlate,
+                                        null, /* car_number, null for now, will be populated at save request */
                                         eventDescription);
                                 if (eventsContainer.add(addedEvent, EventsContainer.EventState.ADDED)) {
                                     adapter.add(addedEvent);
