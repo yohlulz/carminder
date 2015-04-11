@@ -13,7 +13,6 @@ import android.support.v4.app.Fragment;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
-import android.util.Log;
 import android.view.ContextMenu;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -33,7 +32,7 @@ import to.uk.carminder.app.data.EventContract;
 import to.uk.carminder.app.data.EventsContainer;
 import to.uk.carminder.app.data.adapter.CarEventsAdapter;
 import to.uk.carminder.app.data.StatusEvent;
-import to.uk.carminder.app.service.EventsModifierService;
+import to.uk.carminder.app.service.EventsManagementService;
 
 
 public class CarEventsActivity extends ActionBarActivity {
@@ -130,8 +129,8 @@ public class CarEventsActivity extends ActionBarActivity {
                 public void onClick(View v) {
                     eventsContainer.ensureCarPlate(carPlate);
                     //TODO add listener and handle reply status code
-                    getActivity().startService(EventsModifierService.IntentBuilder.newInstance()
-                            .command(EventsModifierService.COMMAND_APPLY_FROM_CONTAINER)
+                    getActivity().startService(EventsManagementService.IntentBuilder.newInstance()
+                            .command(EventsManagementService.COMMAND_APPLY_FROM_CONTAINER)
                             .data(eventsContainer)
                             .build(getActivity()));
                     getActivity().onNavigateUp();
@@ -161,6 +160,8 @@ public class CarEventsActivity extends ActionBarActivity {
             final EditText eventNameView = (EditText) dialogView.findViewById(R.id.edit_event_item_name);
             final EditText eventDescriptionView = (EditText) dialogView.findViewById(R.id.edit_event_item_description);
             final DatePicker datePicker = (DatePicker) dialogView.findViewById(R.id.edit_event_date_picker);
+            final long today = Utility.getCurrentDate().getTime().getTime();
+            datePicker.setMinDate(today);
 
             String field;
             if (event != null && !Utility.isStringNullOrEmpty(field = event.getAsString(StatusEvent.FIELD_NAME))) {
@@ -186,6 +187,10 @@ public class CarEventsActivity extends ActionBarActivity {
                             final String eventDescription = String.valueOf(eventDescriptionView.getText());
                             if (Utility.isStringNullOrEmpty(eventName)) {
                                 Utility.notifyUser(getActivity(), "Invalid event name, please retry");
+                                return;
+                            }
+                            if (expireDate < today) {
+                                Utility.notifyUser(getActivity(), "Invalid expire date, please retry");
                                 return;
                             }
                             if (event != null) { // modify existing

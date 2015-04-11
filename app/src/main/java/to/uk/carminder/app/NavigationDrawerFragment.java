@@ -16,7 +16,6 @@ import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
-import android.util.Log;
 import android.view.ContextMenu;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -25,19 +24,14 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
-import android.widget.Button;
 import android.widget.ListView;
 
 import java.util.ArrayList;
-import java.util.Collection;
 
 import to.uk.carminder.app.data.EventContract;
 import to.uk.carminder.app.data.StatusEvent;
-import to.uk.carminder.app.data.adapter.CarEventsAdapter;
 import to.uk.carminder.app.data.adapter.CarSummaryAdapter;
-import to.uk.carminder.app.service.CheckStatusService;
-import to.uk.carminder.app.service.EventsModifierService;
+import to.uk.carminder.app.service.EventsManagementService;
 
 public class NavigationDrawerFragment extends Fragment implements LoaderManager.LoaderCallbacks<Cursor> {
     private static final String LOG_TAG = NavigationDrawerFragment.class.getSimpleName();
@@ -281,8 +275,8 @@ public class NavigationDrawerFragment extends Fragment implements LoaderManager.
                 adapter.remove(selectedEvent);
                 adapter.notifyDataSetChanged();
                 //TODO add reply listener and handle status code
-                getActivity().startService(EventsModifierService.IntentBuilder.newInstance()
-                                                                              .command(EventsModifierService.COMMAND_DELETE_CAR)
+                getActivity().startService(EventsManagementService.IntentBuilder.newInstance()
+                                                                              .command(EventsManagementService.COMMAND_DELETE_CAR)
                                                                               .data(selectedEvent)
                                                                               .build(getActivity()));
                 break;

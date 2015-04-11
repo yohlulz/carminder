@@ -11,16 +11,13 @@ import android.support.v7.app.ActionBarActivity;
 import android.support.v4.app.Fragment;
 import android.os.Bundle;
 import android.util.Log;
-import android.view.ContextMenu;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.ListView;
-import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -29,7 +26,6 @@ import to.uk.carminder.app.data.EventSuggestionProvider;
 import to.uk.carminder.app.data.StatusEvent;
 import to.uk.carminder.app.data.adapter.StatusEventAdapter;
 import to.uk.carminder.app.service.CheckStatusService;
-import to.uk.carminder.app.service.EventsModifierService;
 
 
 public class StatusActivity extends ActionBarActivity {

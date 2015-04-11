@@ -4,38 +4,9 @@
     android:layout_height="wrap_content"
     android:paddingTop="6dp"
     android:paddingBottom="6dp"
-    android:paddingLeft="10dp"
-    android:paddingRight="15dp"
+    android:paddingLeft="8dp"
+    android:paddingRight="8dp"
     android:id="@+id/car_event_item_container">
-
-    <LinearLayout
-        android:orientation="vertical"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_weight="1"
-        android:id="@+id/item_name_container"
-        android:layout_gravity="center_vertical">
-
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="RCA"
-            android:id="@+id/item_name"
-            android:textAppearance="?android:textAppearanceLarge"
-            android:gravity="center"
-            android:layout_weight="1"
-            android:layout_gravity="center_vertical" />
-
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:id="@+id/item_description"
-            android:textAppearance="?android:textAppearanceSmall"
-            android:singleLine="false"
-            android:elegantTextHeight="false"
-            android:gravity="center_horizontal"
-            android:layout_weight="0" />
-    </LinearLayout>
 
     <LinearLayout
         android:orientation="vertical"
@@ -44,7 +15,8 @@
         android:gravity="center"
         android:background="@drawable/ic_date"
         android:id="@+id/item_picker"
-        android:layout_gravity="center_vertical">
+        android:layout_gravity="center_vertical"
+        android:layout_marginRight="7dp">
 
         <TextView
             android:layout_width="wrap_content"
@@ -78,5 +50,42 @@
             android:layout_marginTop="-3dp" />
 
     </LinearLayout>
+
+    <LinearLayout
+        android:orientation="vertical"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:id="@+id/item_name_container"
+        android:layout_gravity="center_vertical">
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="RCA"
+            android:id="@+id/item_name"
+            android:textAppearance="?android:textAppearanceLarge"
+            android:gravity="center"
+            android:layout_weight="1"
+            android:layout_gravity="center_vertical" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/item_description"
+            android:textAppearance="?android:textAppearanceSmall"
+            android:singleLine="false"
+            android:elegantTextHeight="false"
+            android:gravity="center_horizontal"
+            android:layout_weight="0" />
+    </LinearLayout>
+
+    <ImageView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/btn_add_to_calendar"
+        android:src="@drawable/ic_calendar"
+        android:layout_gravity="center_vertical"
+        android:layout_marginLeft="7dp" />
 
 </LinearLayout>

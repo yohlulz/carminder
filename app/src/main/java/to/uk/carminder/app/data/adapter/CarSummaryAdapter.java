@@ -41,7 +41,6 @@ public class CarSummaryAdapter extends ArrayAdapter<StatusEvent> {
         if (event.requiresAttention(getContext())) {
             holder.attentionView.setVisibility(View.VISIBLE);
             holder.carNumber.setTextColor(getContext().getResources().getColor(R.color.red_holo));
-            holder.carNumber.setTypeface(Typeface.DEFAULT_BOLD);
         } else {
             /* keep it in layout to preserve alignment */
             holder.attentionView.setVisibility(View.INVISIBLE);

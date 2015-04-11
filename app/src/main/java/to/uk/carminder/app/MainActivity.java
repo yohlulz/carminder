@@ -6,6 +6,7 @@ import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
+import android.preference.PreferenceManager;
 import android.support.annotation.Nullable;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
@@ -120,9 +121,11 @@ public class MainActivity extends ActionBarActivity implements NavigationDrawerF
 
     public static class PlaceholderFragment extends Fragment implements LoaderManager.LoaderCallbacks<Cursor> {
         private static final String ARG_CAR_PLATE = "car_plate";
+        private static final String PREF_ADD_EVENTS_TO_CALENDAR = "pref_add_events_to_calendar";
         private static final int CAR_DETAILS_LOADER = 2;
 
         private CarEventsAdapter adapter;
+        private boolean prefAddEventsToCalendar;
 
         public static PlaceholderFragment newInstance(String carPlate) {
             PlaceholderFragment fragment = new PlaceholderFragment();
@@ -130,6 +133,14 @@ public class MainActivity extends ActionBarActivity implements NavigationDrawerF
             args.putString(ARG_CAR_PLATE, carPlate);
             fragment.setArguments(args);
             return fragment;
+        }
+
+        @Override
+        public void onCreate(Bundle savedInstanceState) {
+            super.onCreate(savedInstanceState);
+            if (savedInstanceState != null) {
+                prefAddEventsToCalendar = savedInstanceState.getBoolean(PREF_ADD_EVENTS_TO_CALENDAR);
+            }
         }
 
         @Override
@@ -152,6 +163,23 @@ public class MainActivity extends ActionBarActivity implements NavigationDrawerF
         public void onAttach(Activity activity) {
             super.onAttach(activity);
             ((MainActivity) activity).onSectionAttached(getArguments().getString(ARG_CAR_PLATE));
+        }
+
+        @Override
+        public void onResume() {
+            boolean prefAddCalendarEvents = PreferenceManager.getDefaultSharedPreferences(getActivity()).getBoolean(getActivity().getString(R.string.pref_key_calendar_events), Boolean.valueOf(getActivity().getString(R.string.pref_default_calendar_events)));
+            if (prefAddCalendarEvents != this.prefAddEventsToCalendar) {
+                getLoaderManager().restartLoader(CAR_DETAILS_LOADER, null, this);
+                this.prefAddEventsToCalendar = prefAddCalendarEvents;
+            }
+
+            super.onResume();
+        }
+
+        @Override
+        public void onSaveInstanceState(Bundle outState) {
+            super.onSaveInstanceState(outState);
+            outState.putBoolean(PREF_ADD_EVENTS_TO_CALENDAR, prefAddEventsToCalendar);
         }
 
         @Override

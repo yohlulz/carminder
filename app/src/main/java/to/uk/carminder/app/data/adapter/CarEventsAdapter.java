@@ -1,14 +1,19 @@
 package to.uk.carminder.app.data.adapter;
 
 import android.content.Context;
+import android.content.Intent;
+import android.preference.PreferenceManager;
+import android.provider.CalendarContract;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.TextView;
 
+import java.util.Calendar;
 import java.util.List;
 
 import to.uk.carminder.app.R;
@@ -58,8 +63,40 @@ public class CarEventsAdapter extends ArrayAdapter<StatusEvent> {
         holder.itemPickerMonth.setText(event.getExpireMonth());
         holder.itemPickerDay.setText(event.getExpireDay());
         holder.itemPickerYear.setText(event.getExpireYear());
+        boolean prefAddCalendarEvents = PreferenceManager.getDefaultSharedPreferences(getContext()).getBoolean(getContext().getString(R.string.pref_key_calendar_events), Boolean.valueOf(getContext().getString(R.string.pref_default_calendar_events)));
+        if (showCarPlate && prefAddCalendarEvents) {
+            holder.btnAddToCalendar.setClickable(true);
+            holder.btnAddToCalendar.setVisibility(View.VISIBLE);
+            holder.btnAddToCalendar.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    addEventToCalendar(event);
+                }
+            });
+        } else {
+            holder.btnAddToCalendar.setClickable(false);
+            holder.btnAddToCalendar.setVisibility(View.GONE);
+            holder.btnAddToCalendar.setOnClickListener(null);
+        }
+
 
         return convertView;
+    }
+
+    private void addEventToCalendar(StatusEvent event) {
+        final Intent intent = new Intent(Intent.ACTION_INSERT)
+                .setData(CalendarContract.Events.CONTENT_URI)
+                .putExtra(CalendarContract.EXTRA_EVENT_BEGIN_TIME, event.getAsLong(StatusEvent.FIELD_END_DATE))
+                .putExtra(CalendarContract.EXTRA_EVENT_END_TIME, event.getAsLong(StatusEvent.FIELD_END_DATE))
+                .putExtra(CalendarContract.Events.TITLE, String.format("Expires %s for %s", event.getAsString(StatusEvent.FIELD_NAME), event.getAsString(StatusEvent.FIELD_CAR_NUMBER)))
+                .putExtra(CalendarContract.Events.DESCRIPTION, event.getAsString(StatusEvent.FIELD_DESCRIPTION))
+                .putExtra(CalendarContract.Events.ALL_DAY, true);
+
+        if (intent.resolveActivity(getContext().getPackageManager()) != null) {
+            getContext().startActivity(Intent.createChooser(intent, "Choose app"));
+        } else {
+            Utility.notifyUser(getContext(), "There is no activity found for adding calendar events.");
+        }
     }
 
     private static class ViewHolder {
@@ -68,6 +105,7 @@ public class CarEventsAdapter extends ArrayAdapter<StatusEvent> {
         private TextView itemPickerMonth;
         private TextView itemPickerDay;
         private TextView itemPickerYear;
+        private ImageView btnAddToCalendar;
 
         public ViewHolder(View view) {
             itemName = (TextView) view.findViewById(R.id.item_name);
@@ -75,6 +113,7 @@ public class CarEventsAdapter extends ArrayAdapter<StatusEvent> {
             itemPickerDay = (TextView) view.findViewById(R.id.item_picker_day);
             itemPickerMonth = (TextView) view.findViewById(R.id.item_picker_month);
             itemPickerYear = (TextView) view.findViewById(R.id.item_picker_year);
+            btnAddToCalendar = (ImageView) view.findViewById(R.id.btn_add_to_calendar);
         }
     }
 }

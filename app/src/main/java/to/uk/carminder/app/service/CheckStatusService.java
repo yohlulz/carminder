@@ -29,7 +29,6 @@ import to.uk.carminder.app.data.StatusEvent;
 public class CheckStatusService extends IntentService {
     private static final String LOG_TAG = CheckStatusService.class.getSimpleName();
     public static final String ACTION_ON_DEMAND = "uk.to.carminder.app.DEMAND";
-    public static final String ACTION_NOTIFICATION = "uk.to.carminder.app.NOTIFICATION";
 
     private static final String FIELD_MAIN_API_URL = "FIELD_API";
     private static final String FIELD_BACKUP_API_URL = "FIELD_BACKUP_API";
@@ -41,7 +40,7 @@ public class CheckStatusService extends IntentService {
     private static final String WORKER_NAME = "CheckStatus Worker";
     private static final String MAIN_API_URL = "http://carminder.uk.to/index.php?c=nr_inmatriculare";
     private static final String BACKUP_API_URL = "http://carreminder.uk.to/index.php?c=nr_inmatriculare";
-    private static final int DEFAULT_TIMEOUT_IN_MILLIS = 10 * 1000;
+    private static final int DEFAULT_TIMEOUT_IN_MILLIS = 8 * 1000;
 
     public CheckStatusService() {
         super(WORKER_NAME);
@@ -70,7 +69,7 @@ public class CheckStatusService extends IntentService {
         private String mainURL = MAIN_API_URL;
         private String backupURL = BACKUP_API_URL;
         private String carPlate;
-        private String replySubject = ACTION_NOTIFICATION;
+        private String replySubject = ACTION_ON_DEMAND;
         private int timeout;
 
         private TaskBuilder() {

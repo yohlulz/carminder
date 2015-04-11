@@ -3,7 +3,6 @@ package to.uk.carminder.app.service;
 
 import android.app.IntentService;
 import android.content.ContentProviderOperation;
-import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
 import android.content.OperationApplicationException;
@@ -15,9 +14,7 @@ import android.util.Log;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Map;
-import java.util.Set;
 
 import to.uk.carminder.app.R;
 import to.uk.carminder.app.Utility;
@@ -25,13 +22,18 @@ import to.uk.carminder.app.data.EventContract;
 import to.uk.carminder.app.data.EventsContainer;
 import to.uk.carminder.app.data.StatusEvent;
 
-public class EventsModifierService extends IntentService {
+public class EventsManagementService extends IntentService {
     private static final String WORKER_NAME = "EventModifier Worker";
-    private static final String LOG_TAG = EventsModifierService.class.getSimpleName();
+    private static final String LOG_TAG = EventsManagementService.class.getSimpleName();
+
     public static final String ACTION_MODIFY_STATUS = "uk.to.carminder.app.MODIFY_STATUS";
 
     public static final String COMMAND_APPLY_FROM_CONTAINER = "apply_from_container";
     public static final String COMMAND_DELETE_CAR = "delete_car";
+    public static final String ACTION_NOTIFICATION = "uk.to.carminder.app.NOTIFICATION";
+    public static final String ACTION_RESCHEDULE_ALARM = "uk.to.carminder.app.RESCHEDULE_ALARMS";
+    public static final String ACTION_ADD_ALARM = "uk.to.carminder.app.SCHEDULE_ALARM";
+
 
     public static final int STATUS_OK = 0;
     public static final int STATUS_ERROR = 1;
@@ -41,7 +43,7 @@ public class EventsModifierService extends IntentService {
     public static final String FIELD_COMMAND = "FIELD_COMMAND";
     public static final String FIELD_REPLY_SUBJECT = "REPLY_SUBJECT";
 
-    public EventsModifierService() {
+    public EventsManagementService() {
         super(WORKER_NAME);
     }
 
@@ -165,6 +167,27 @@ public class EventsModifierService extends IntentService {
                         }
                         break;
 
+                    case ACTION_ADD_ALARM:
+                        //TODO query content provider and cancel any existing pending intents before adding a new alarm
+                        //TODO call setAlarm on the received event
+                        break;
+
+                    case ACTION_RESCHEDULE_ALARM:
+                        // TODO retrieve all events and call setAlarm for all of them
+                        break;
+
+                    case ACTION_NOTIFICATION:
+                        if (data instanceof StatusEvent) {
+                            final StatusEvent notificationEvent = (StatusEvent) data;
+                            //TODO call showNotification on notification manager
+
+
+                        } else {
+                            status = STATUS_ERROR;
+                            message = context.getString(R.string.message_invalid_data);
+                        }
+                        break;
+
                     default:
                         status = STATUS_ERROR;
                         message = context.getString(R.string.message_unknown_command);
@@ -218,7 +241,7 @@ public class EventsModifierService extends IntentService {
         }
 
         public Intent build(Context context) {
-           final Intent intent = new Intent(context, EventsModifierService.class);
+           final Intent intent = new Intent(context, EventsManagementService.class);
             intent.putExtra(FIELD_COMMAND, command);
             intent.putExtra(Utility.FIELD_DATA, data);
             intent.putExtra(FIELD_REPLY_SUBJECT, replySubject);
@@ -230,4 +253,6 @@ public class EventsModifierService extends IntentService {
             return new IntentBuilder();
         }
     }
+
+
 }
