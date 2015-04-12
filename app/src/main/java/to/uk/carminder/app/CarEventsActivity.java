@@ -191,7 +191,7 @@ public class CarEventsActivity extends ActionBarActivity {
             detailsDialog = new AlertDialog.Builder(getActivity()).setTitle(R.string.title_dialog_manage_car_event)
                     .setIcon(R.drawable.car_launcher)
                     .setView(dialogView)
-                    .setPositiveButton(R.string.action_save, new DialogInterface.OnClickListener() {
+                    .setPositiveButton(R.string.action_add, new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialog, int which) {
                             final Long expireDate = Utility.parse(datePicker.getYear(), datePicker.getMonth(), datePicker.getDayOfMonth());

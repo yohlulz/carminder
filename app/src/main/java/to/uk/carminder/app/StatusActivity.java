@@ -51,7 +51,6 @@ public class StatusActivity extends ActionBarActivity {
 
     private void handleIntent(Intent intent) {
         if (Intent.ACTION_SEARCH.equals(intent.getAction())) {
-            //TODO start from alarm
             startService(CheckStatusService.IntentBuilder.newInstance()
                                                          .carPlate(intent.getStringExtra(SearchManager.QUERY))
                                                          .replySubject(CheckStatusService.ACTION_ON_DEMAND)

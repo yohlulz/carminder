@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <bool name="show_status_as_dialog">false</bool>
+    <bool name="lockDrawer">false</bool>
 </resources>

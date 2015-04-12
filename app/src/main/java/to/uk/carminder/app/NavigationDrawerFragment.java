@@ -1,10 +1,15 @@
 package to.uk.carminder.app;
 
+import android.app.SearchManager;
+import android.content.ComponentName;
+import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
+import android.graphics.Color;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
+import android.support.v4.view.MenuItemCompat;
 import android.support.v7.app.ActionBarActivity;
 import android.app.Activity;
 import android.support.v7.app.ActionBar;
@@ -16,6 +21,7 @@ import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
+import android.support.v7.widget.SearchView;
 import android.view.ContextMenu;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -56,6 +62,7 @@ public class NavigationDrawerFragment extends Fragment implements LoaderManager.
     private boolean mUserLearnedDrawer;
 
     private CarSummaryAdapter adapter;
+    private boolean isDrawerLocked;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -114,17 +121,22 @@ public class NavigationDrawerFragment extends Fragment implements LoaderManager.
         return mDrawerLayout != null && mDrawerLayout.isDrawerOpen(mFragmentContainerView);
     }
 
-    public void setUp(int fragmentId, DrawerLayout drawerLayout) {
+    public void setUp(int fragmentId, DrawerLayout drawerLayout, boolean isDrawerLocked) {
+        this.isDrawerLocked = isDrawerLocked;
         mFragmentContainerView = getActivity().findViewById(fragmentId);
         mDrawerLayout = drawerLayout;
+        if (isDrawerLocked && mDrawerLayout != null) {
+            mDrawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_OPEN);
+            mDrawerLayout.setScrimColor(Color.TRANSPARENT);
+        } else {
+            // set a custom shadow that overlays the main content when the drawer opens
+            mDrawerLayout.setDrawerShadow(R.drawable.drawer_shadow, GravityCompat.START);
+            // set up the drawer's list view with items and click listener
 
-        // set a custom shadow that overlays the main content when the drawer opens
-        mDrawerLayout.setDrawerShadow(R.drawable.drawer_shadow, GravityCompat.START);
-        // set up the drawer's list view with items and click listener
-
-        ActionBar actionBar = getActionBar();
-        actionBar.setDisplayHomeAsUpEnabled(true);
-        actionBar.setHomeButtonEnabled(true);
+            ActionBar actionBar = getActionBar();
+            actionBar.setDisplayHomeAsUpEnabled(true);
+            actionBar.setHomeButtonEnabled(true);
+        }
 
         // ActionBarDrawerToggle ties together the the proper interactions
         // between the navigation drawer and the action bar app icon.
@@ -165,7 +177,7 @@ public class NavigationDrawerFragment extends Fragment implements LoaderManager.
 
         // If the user hasn't 'learned' about the drawer, open it to introduce them to the drawer,
         // per the navigation drawer design guidelines.
-        if (!mUserLearnedDrawer && !mFromSavedInstanceState) {
+        if (!isDrawerLocked && !mUserLearnedDrawer && !mFromSavedInstanceState) {
             mDrawerLayout.openDrawer(mFragmentContainerView);
         }
 
@@ -177,7 +189,9 @@ public class NavigationDrawerFragment extends Fragment implements LoaderManager.
             }
         });
 
-        mDrawerLayout.setDrawerListener(mDrawerToggle);
+        if (!isDrawerLocked) {
+            mDrawerLayout.setDrawerListener(mDrawerToggle);
+        }
     }
 
     private void selectItem(int position, boolean notifyCallback) {
@@ -201,7 +215,7 @@ public class NavigationDrawerFragment extends Fragment implements LoaderManager.
     }
 
     void closeDrawer() {
-        if (mDrawerLayout != null) {
+        if (mDrawerLayout != null && !isDrawerLocked) {
             mDrawerLayout.closeDrawer(mFragmentContainerView);
         }
     }
@@ -238,8 +252,13 @@ public class NavigationDrawerFragment extends Fragment implements LoaderManager.
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         if (mDrawerLayout != null && isDrawerOpen()) {
-            inflater.inflate(R.menu.global, menu);
+            inflater.inflate(R.menu.main, menu);
             showGlobalContextActionBar();
+
+            SearchManager searchManager = (SearchManager) getActivity().getSystemService(Context.SEARCH_SERVICE);
+            SearchView searchView = (SearchView) MenuItemCompat.getActionView(menu.findItem(R.id.action_status));
+            searchView.setSearchableInfo(searchManager.getSearchableInfo(new ComponentName(getActivity(), StatusActivity.class)));
+            searchView.setIconifiedByDefault(true);
         }
         super.onCreateOptionsMenu(menu, inflater);
     }

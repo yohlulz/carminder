@@ -25,6 +25,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.support.v4.widget.DrawerLayout;
+import android.widget.FrameLayout;
 import android.widget.ListView;
 
 import java.util.ArrayList;
@@ -40,6 +41,7 @@ public class MainActivity extends ActionBarActivity implements NavigationDrawerF
 
     private NavigationDrawerFragment mNavigationDrawerFragment;
     private CharSequence mTitle;
+    private boolean isDrawerLocked = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -48,7 +50,10 @@ public class MainActivity extends ActionBarActivity implements NavigationDrawerF
 
         mNavigationDrawerFragment = (NavigationDrawerFragment) getSupportFragmentManager().findFragmentById(R.id.navigation_drawer);
         mTitle = getTitle();
-        mNavigationDrawerFragment.setUp(R.id.navigation_drawer, (DrawerLayout) findViewById(R.id.drawer_layout));
+        final DrawerLayout drawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
+        isDrawerLocked = getResources().getBoolean(R.bool.lockDrawer);
+
+        mNavigationDrawerFragment.setUp(R.id.navigation_drawer, drawerLayout, isDrawerLocked);
     }
 
     @Override
@@ -112,7 +117,7 @@ public class MainActivity extends ActionBarActivity implements NavigationDrawerF
     @Override
     public void onBackPressed() {
         /* close drawer if opened */
-        if (mNavigationDrawerFragment.isDrawerOpen()) {
+        if (mNavigationDrawerFragment.isDrawerOpen() && !isDrawerLocked) {
             mNavigationDrawerFragment.closeDrawer();
             return;
         }

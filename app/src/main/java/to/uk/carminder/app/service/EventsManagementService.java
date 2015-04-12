@@ -161,7 +161,7 @@ public class EventsManagementService extends IntentService {
                                     }
                                 }
                             }
-                            /* because there can by newly added events which don't have yet an id, reschedule all alarms */
+                            /* because there can be newly added events which don't have yet an id, reschedule all alarms */
                             context.startService(EventsManagementService.IntentBuilder.newInstance()
                                                                                       .command(EventsManagementService.ACTION_RESCHEDULE_ALARMS)
                                                                                       .build(context));
