@@ -86,6 +86,7 @@
         android:id="@+id/btn_add_to_calendar"
         android:src="@drawable/ic_calendar"
         android:layout_gravity="center_vertical"
-        android:layout_marginLeft="7dp" />
+        android:layout_marginLeft="7dp"
+        android:visibility="invisible" />
 
 </LinearLayout>

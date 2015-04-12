@@ -43,5 +43,8 @@ public class EventContract {
             return uri.getPathSegments().get(2);
         }
 
+        public static long getIdFromUri(Uri uri) {
+            return ContentUris.parseId(uri);
+        }
     }
 }

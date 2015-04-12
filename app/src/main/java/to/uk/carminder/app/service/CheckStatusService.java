@@ -122,7 +122,8 @@ public class CheckStatusService extends IntentService {
                     if (Utility.isNetworkConnected(context)) {
                         final String rawData = fetchData(mainURL);
                         replyIntent = buildReplyIntent(context, replySubject, (rawData != null) ? rawData : fetchData(backupURL), false);
-                        ensureData(context, (StatusEvent) replyIntent.getParcelableExtra(Utility.FIELD_DATA));
+                        final StatusEvent generatedEvent = (StatusEvent) replyIntent.getParcelableExtra(Utility.FIELD_DATA);
+                        ensureData(context, generatedEvent);
 
                     } else {
                         replyIntent = buildReplyIntent(context, replySubject, null, true);
@@ -174,7 +175,13 @@ public class CheckStatusService extends IntentService {
                 /* data already present or invalid data, drop request */
                 return;
             }
-            context.getContentResolver().insert(EventContract.StatusEntry.CONTENT_URI, statusEvent.getContentValues());
+            final long id = EventContract.StatusEntry.getIdFromUri(context.getContentResolver().insert(EventContract.StatusEntry.CONTENT_URI, statusEvent.getContentValues()));
+            statusEvent.put(StatusEvent.FIELD_ID, id);
+            context.startService(EventsManagementService.IntentBuilder.newInstance()
+                    .command(EventsManagementService.ACTION_ADD_ALARM)
+                    .data(statusEvent)
+                    .build(context));
+
         }
 
         private void deleteOldData(Context context) {

@@ -9,12 +9,14 @@ import android.os.Parcel;
 import android.os.Parcelable;
 import android.preference.PreferenceManager;
 import android.util.Log;
+import android.widget.RemoteViews;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
@@ -196,6 +198,15 @@ public class StatusEvent implements Parcelable, Comparable<StatusEvent> {
         return Math.abs(new Date().getTime() - expireDateInMillis) < TimeUnit.DAYS.toMillis(daysToNotifyBefore);
     }
 
+    public Calendar getNotificationDate(Context context) {
+        final Long expireDateInMillis = getAsLong(FIELD_END_DATE);
+        final int daysToNotifyBefore = Integer.parseInt(PreferenceManager.getDefaultSharedPreferences(context).getString(context.getString(R.string.pref_key_days), context.getString(R.string.pref_default_days)));
+
+        final Calendar cal = Calendar.getInstance();
+        cal.setTimeInMillis(expireDateInMillis - daysToNotifyBefore);
+
+        return cal;
+    }
 
     @Override
     public int describeContents() {
@@ -265,11 +276,14 @@ public class StatusEvent implements Parcelable, Comparable<StatusEvent> {
                                                         cursor.getLong(INDEX_COLUMN_END_DATE),
                                                         cursor.getString(INDEX_COLUMN_CAR_NUMBER),
                                                         cursor.getString(INDEX_COLUMN_DESCRIPTION));
-            event.put(FIELD_ID, cursor.getInt(INDEX_COLUMN_ID));
+            event.put(FIELD_ID, cursor.getLong(INDEX_COLUMN_ID));
             result.add(event);
         }
 
         return result;
     }
 
+    public String getSummary() {
+        return String.format("%s   Event %s # %s", getExpireDate(), getAsString(FIELD_NAME), getAsString(FIELD_CAR_NUMBER));
+    }
 }

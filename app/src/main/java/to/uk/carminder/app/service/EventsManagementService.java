@@ -19,6 +19,7 @@ import java.util.Map;
 import to.uk.carminder.app.R;
 import to.uk.carminder.app.Utility;
 import to.uk.carminder.app.data.EventContract;
+import to.uk.carminder.app.data.EventProvider;
 import to.uk.carminder.app.data.EventsContainer;
 import to.uk.carminder.app.data.StatusEvent;
 
@@ -31,7 +32,7 @@ public class EventsManagementService extends IntentService {
     public static final String COMMAND_APPLY_FROM_CONTAINER = "apply_from_container";
     public static final String COMMAND_DELETE_CAR = "delete_car";
     public static final String ACTION_NOTIFICATION = "uk.to.carminder.app.NOTIFICATION";
-    public static final String ACTION_RESCHEDULE_ALARM = "uk.to.carminder.app.RESCHEDULE_ALARMS";
+    public static final String ACTION_RESCHEDULE_ALARMS = "uk.to.carminder.app.RESCHEDULE_ALARMS";
     public static final String ACTION_ADD_ALARM = "uk.to.carminder.app.SCHEDULE_ALARM";
 
 
@@ -160,6 +161,10 @@ public class EventsManagementService extends IntentService {
                                     }
                                 }
                             }
+                            /* because there can by newly added events which don't have yet an id, reschedule all alarms */
+                            context.startService(EventsManagementService.IntentBuilder.newInstance()
+                                                                                      .command(EventsManagementService.ACTION_RESCHEDULE_ALARMS)
+                                                                                      .build(context));
 
                         } else {
                             status = STATUS_ERROR;
@@ -168,19 +173,39 @@ public class EventsManagementService extends IntentService {
                         break;
 
                     case ACTION_ADD_ALARM:
-                        //TODO query content provider and cancel any existing pending intents before adding a new alarm
-                        //TODO call setAlarm on the received event
+                        if (data instanceof StatusEvent) {
+                            new NotificationManager().addAlarm(context, (StatusEvent) data);
+
+                        } else {
+                            status = STATUS_ERROR;
+                            message = context.getString(R.string.message_invalid_data);
+                        }
                         break;
 
-                    case ACTION_RESCHEDULE_ALARM:
-                        // TODO retrieve all events and call setAlarm for all of them
+                    case ACTION_RESCHEDULE_ALARMS:
+                        final NotificationManager notificationManager = new NotificationManager();
+                        for (StatusEvent event : StatusEvent.fromCursor(context.getContentResolver().query(EventContract.StatusEntry.CONTENT_URI,
+                                                                                                            StatusEvent.COLUMNS_STATUS_ENTRY,
+                                                                                                            null, null, null))) {
+                            notificationManager.addAlarm(context, event);
+                            Log.i(LOG_TAG, "Rescheduled alarm for event " + event.getContentValues());
+                        }
                         break;
 
                     case ACTION_NOTIFICATION:
                         if (data instanceof StatusEvent) {
                             final StatusEvent notificationEvent = (StatusEvent) data;
-                            //TODO call showNotification on notification manager
+                            final Collection<StatusEvent> existingEvents = StatusEvent.fromCursor(context.getContentResolver().query(EventContract.StatusEntry.CONTENT_URI,
+                                                                                                                                     StatusEvent.COLUMNS_STATUS_ENTRY,
+                                                                                                                                     EventProvider.SELECTION_CAR_PLATE + " AND " + EventContract.StatusEntry.COLUMN_EVENT_NAME + " LIKE ?",
+                                                                                                                                     new String[] {notificationEvent.getAsString(StatusEvent.FIELD_CAR_NUMBER), notificationEvent.getAsString(StatusEvent.FIELD_NAME)},
+                                                                                                                                     null));
+                            if (existingEvents.contains(notificationEvent)) {
+                                new NotificationManager().showNotification(context, notificationEvent);
 
+                            } else {
+                                Log.w(LOG_TAG, "Will not show a notification for a modified event without proper alarm. Event: " + notificationEvent.getContentValues());
+                            }
 
                         } else {
                             status = STATUS_ERROR;

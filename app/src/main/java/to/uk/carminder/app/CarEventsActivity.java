@@ -39,6 +39,7 @@ public class CarEventsActivity extends ActionBarActivity {
     private static final String LOG_TAG = CarEventsActivity.class.getSimpleName();
     private static final String FIELD_DIALOG_SHOWN = "FIELD_DETAILS_DIALOG_SHOWN";
     private static final String FIELD_STATUS_EVENT_DETAILS = "FIELD_DETAILS_STATUS_EVENT";
+    private static final String FIELD_CONTEXT_MENU_LEARNT = "FIELD_CONTEXT_MENU_LEARNT";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -87,15 +88,25 @@ public class CarEventsActivity extends ActionBarActivity {
         private AlertDialog detailsDialog;
         private StatusEvent detailsEvent;
         private boolean detailsDialogShown;
+        private boolean contextMenuLearnt;
+        private ListView itemsView;
 
         @Override
         public View onCreateView(final LayoutInflater inflater, ViewGroup container, final Bundle savedInstanceState) {
             View rootView = inflater.inflate(R.layout.fragment_car_events, container, false);
             adapter = new CarEventsAdapter(getActivity(), new ArrayList<StatusEvent>());
 
-            final ListView view = (ListView) rootView.findViewById(R.id.list_item_car_event);
-            view.setAdapter(adapter);
-            registerForContextMenu(view);
+            itemsView = (ListView) rootView.findViewById(R.id.list_item_car_event);
+            itemsView.setAdapter(adapter);
+            registerForContextMenu(itemsView);
+            if (!contextMenuLearnt) {
+                itemsView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                    @Override
+                    public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                        Utility.notifyUser(getActivity(), "Long click for options menu");
+                    }
+                });
+            }
 
             carNumberView = (EditText) rootView.findViewById(R.id.list_item_car_name);
             carNumberView.addTextChangedListener(new TextWatcher() {
@@ -153,6 +164,7 @@ public class CarEventsActivity extends ActionBarActivity {
             outState.putParcelable(Utility.FIELD_CAR_EVENTS, eventsContainer);
             outState.putBoolean(FIELD_DIALOG_SHOWN, detailsDialogShown);
             outState.putParcelable(FIELD_STATUS_EVENT_DETAILS, detailsEvent);
+            outState.putBoolean(FIELD_CONTEXT_MENU_LEARNT, contextMenuLearnt);
         }
 
         private void showDetailsView(final Bundle savedInstanceState, final StatusEvent event) {
@@ -239,6 +251,8 @@ public class CarEventsActivity extends ActionBarActivity {
 
         @Override
         public boolean onContextItemSelected(MenuItem item) {
+            contextMenuLearnt = true;
+            itemsView.setOnItemClickListener(null);
             final AdapterView.AdapterContextMenuInfo info = (AdapterView.AdapterContextMenuInfo) item.getMenuInfo();
 
             switch (item.getItemId()) {
@@ -263,6 +277,7 @@ public class CarEventsActivity extends ActionBarActivity {
         public void onCreate(Bundle savedInstanceState) {
             super.onCreate(savedInstanceState);
             if (savedInstanceState != null) {
+                contextMenuLearnt = savedInstanceState.getBoolean(FIELD_CONTEXT_MENU_LEARNT, false);
                 this.eventsContainer.update((EventsContainer) savedInstanceState.getParcelable(Utility.FIELD_CAR_EVENTS));
                 if (savedInstanceState.getBoolean(FIELD_DIALOG_SHOWN, false)) {
                     showDetailsView(savedInstanceState, (StatusEvent) savedInstanceState.getParcelable(FIELD_STATUS_EVENT_DETAILS));

@@ -13,7 +13,7 @@ public class RebootReceiver extends BroadcastReceiver {
         switch (intent.getAction()) {
             case Intent.ACTION_BOOT_COMPLETED:
                 context.startService(EventsManagementService.IntentBuilder.newInstance()
-                        .command(EventsManagementService.ACTION_RESCHEDULE_ALARM)
+                        .command(EventsManagementService.ACTION_RESCHEDULE_ALARMS)
                         .build(context));
                 break;
 
