@@ -17,6 +17,9 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 import to.uk.carminder.app.Utility;
 
+/**
+ * Container for StatusEvent that stores each event's last state
+ */
 public class EventsContainer implements Parcelable {
     private final Bundle values = new Bundle();
     private final ConcurrentMap<StatusEvent, EventState> eventToState = new ConcurrentHashMap<>();

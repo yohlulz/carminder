@@ -30,6 +30,9 @@ import to.uk.carminder.app.R;
 import to.uk.carminder.app.Utility;
 import to.uk.carminder.app.service.CheckStatusService;
 
+/**
+ * Encapsulates a status event. Has helper methods for building form Cursor, JSON etc.
+ */
 public class StatusEvent implements Parcelable, Comparable<StatusEvent> {
     private static final String LOG_TAG = StatusEvent.class.getSimpleName();
     public static final ThreadLocal<DateFormat> DAY_FORMAT = new ThreadLocal<DateFormat>() {
@@ -195,7 +198,7 @@ public class StatusEvent implements Parcelable, Comparable<StatusEvent> {
             return false;
         }
 
-        return Math.abs(new Date().getTime() - expireDateInMillis) < TimeUnit.DAYS.toMillis(daysToNotifyBefore);
+        return (expireDateInMillis - Utility.getCurrentDate().getTime().getTime() < TimeUnit.DAYS.toMillis(daysToNotifyBefore));
     }
 
     public Calendar getNotificationDate(Context context) {

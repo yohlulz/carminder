@@ -18,18 +18,15 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.os.Bundle;
 import android.support.v7.widget.SearchView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.support.v4.widget.DrawerLayout;
-import android.widget.FrameLayout;
 import android.widget.ListView;
 
 import java.util.ArrayList;
-import java.util.Date;
 
 import to.uk.carminder.app.data.EventContract;
 import to.uk.carminder.app.data.StatusEvent;
@@ -41,7 +38,7 @@ public class MainActivity extends ActionBarActivity implements NavigationDrawerF
 
     private NavigationDrawerFragment mNavigationDrawerFragment;
     private CharSequence mTitle;
-    private boolean isDrawerLocked = false;
+    private boolean isDrawerLocked;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -50,17 +47,16 @@ public class MainActivity extends ActionBarActivity implements NavigationDrawerF
 
         mNavigationDrawerFragment = (NavigationDrawerFragment) getSupportFragmentManager().findFragmentById(R.id.navigation_drawer);
         mTitle = getTitle();
-        final DrawerLayout drawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
         isDrawerLocked = getResources().getBoolean(R.bool.lockDrawer);
 
-        mNavigationDrawerFragment.setUp(R.id.navigation_drawer, drawerLayout, isDrawerLocked);
+        mNavigationDrawerFragment.setUp(R.id.navigation_drawer, (DrawerLayout) findViewById(R.id.drawer_layout), isDrawerLocked);
     }
 
     @Override
     public void onNavigationDrawerItemSelected(String carPlate) {
         FragmentManager fragmentManager = getSupportFragmentManager();
         fragmentManager.beginTransaction()
-                .replace(R.id.container, PlaceholderFragment.newInstance(carPlate))
+                .replace(R.id.container, DetailsFragment.newInstance(carPlate))
                 .commit();
     }
 
@@ -124,7 +120,7 @@ public class MainActivity extends ActionBarActivity implements NavigationDrawerF
         super.onBackPressed();
     }
 
-    public static class PlaceholderFragment extends Fragment implements LoaderManager.LoaderCallbacks<Cursor> {
+    public static class DetailsFragment extends Fragment implements LoaderManager.LoaderCallbacks<Cursor> {
         private static final String ARG_CAR_PLATE = "car_plate";
         private static final String PREF_ADD_EVENTS_TO_CALENDAR = "pref_add_events_to_calendar";
         private static final int CAR_DETAILS_LOADER = 2;
@@ -132,8 +128,8 @@ public class MainActivity extends ActionBarActivity implements NavigationDrawerF
         private CarEventsAdapter adapter;
         private boolean prefAddEventsToCalendar;
 
-        public static PlaceholderFragment newInstance(String carPlate) {
-            PlaceholderFragment fragment = new PlaceholderFragment();
+        public static DetailsFragment newInstance(String carPlate) {
+            DetailsFragment fragment = new DetailsFragment();
             Bundle args = new Bundle();
             args.putString(ARG_CAR_PLATE, carPlate);
             fragment.setArguments(args);

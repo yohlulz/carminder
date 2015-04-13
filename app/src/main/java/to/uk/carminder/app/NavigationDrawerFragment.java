@@ -57,7 +57,7 @@ public class NavigationDrawerFragment extends Fragment implements LoaderManager.
     private View mFragmentContainerView;
 
     private int mCurrentSelectedPosition = POSITION_VIEW_ALL_EVENTS;
-    private String mCurrentSelectdValue;
+    private String mCurrentSelectedValue;
     private boolean mFromSavedInstanceState;
     private boolean mUserLearnedDrawer;
 
@@ -73,7 +73,7 @@ public class NavigationDrawerFragment extends Fragment implements LoaderManager.
 
         if (savedInstanceState != null) {
             mCurrentSelectedPosition = savedInstanceState.getInt(STATE_SELECTED_POSITION);
-            mCurrentSelectdValue = savedInstanceState.getString(STATE_SELECTED_VALUE);
+            mCurrentSelectedValue = savedInstanceState.getString(STATE_SELECTED_VALUE);
             mFromSavedInstanceState = true;
         }
         selectItem(mCurrentSelectedPosition, true);
@@ -165,8 +165,6 @@ public class NavigationDrawerFragment extends Fragment implements LoaderManager.
                 }
 
                 if (!mUserLearnedDrawer) {
-                    // The user manually opened the drawer; store this flag to prevent auto-showing
-                    // the navigation drawer automatically in the future.
                     mUserLearnedDrawer = true;
                     PreferenceManager.getDefaultSharedPreferences(getActivity()).edit().putBoolean(PREF_USER_LEARNED_DRAWER, true).apply();
                 }
@@ -206,11 +204,14 @@ public class NavigationDrawerFragment extends Fragment implements LoaderManager.
         }
         closeDrawer();
         if (mCallbacks != null && notifyCallback) {
-            mCurrentSelectdValue = (position >= 0) ?
+            mCurrentSelectedValue = (position >= 0) ?
                                         (adapter != null && adapter.getCount() > position) ? adapter.getItem(position).getAsString(StatusEvent.FIELD_CAR_NUMBER)
-                                                                                                : mCurrentSelectdValue
+                                                                                                : mCurrentSelectedValue
                                             : getString(R.string.action_view_all_car_events);
-            mCallbacks.onNavigationDrawerItemSelected(mCurrentSelectdValue);
+            mCallbacks.onNavigationDrawerItemSelected(mCurrentSelectedValue);
+            if (isDrawerLocked) {
+                showGlobalContextActionBar(mCurrentSelectedValue);
+            }
         }
     }
 
@@ -240,7 +241,7 @@ public class NavigationDrawerFragment extends Fragment implements LoaderManager.
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
         outState.putInt(STATE_SELECTED_POSITION, mCurrentSelectedPosition);
-        outState.putString(STATE_SELECTED_VALUE, mCurrentSelectdValue);
+        outState.putString(STATE_SELECTED_VALUE, mCurrentSelectedValue);
     }
 
     @Override
@@ -253,7 +254,7 @@ public class NavigationDrawerFragment extends Fragment implements LoaderManager.
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         if (mDrawerLayout != null && isDrawerOpen()) {
             inflater.inflate(R.menu.main, menu);
-            showGlobalContextActionBar();
+            showGlobalContextActionBar(getString(R.string.app_name));
 
             SearchManager searchManager = (SearchManager) getActivity().getSystemService(Context.SEARCH_SERVICE);
             SearchView searchView = (SearchView) MenuItemCompat.getActionView(menu.findItem(R.id.action_status));
@@ -306,11 +307,11 @@ public class NavigationDrawerFragment extends Fragment implements LoaderManager.
         return true;
     }
 
-    private void showGlobalContextActionBar() {
+    private void showGlobalContextActionBar(String title) {
         ActionBar actionBar = getActionBar();
         actionBar.setDisplayShowTitleEnabled(true);
         actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_STANDARD);
-        actionBar.setTitle(R.string.app_name);
+        actionBar.setTitle(title);
     }
 
     private ActionBar getActionBar() {

@@ -35,7 +35,6 @@ public class EventsManagementService extends IntentService {
     public static final String ACTION_RESCHEDULE_ALARMS = "uk.to.carminder.app.RESCHEDULE_ALARMS";
     public static final String ACTION_ADD_ALARM = "uk.to.carminder.app.SCHEDULE_ALARM";
 
-
     public static final int STATUS_OK = 0;
     public static final int STATUS_ERROR = 1;
 
@@ -58,42 +57,42 @@ public class EventsManagementService extends IntentService {
     }
 
     private static class TaskBuilder {
-        private static final Map<EventsContainer.EventState, Callback> actionByState = new HashMap<>();
+        private static final Map<EventsContainer.EventState, Callback> operationByState = new HashMap<>();
 
         static {
-            actionByState.put(EventsContainer.EventState.ADDED, new Callback() {
+            operationByState.put(EventsContainer.EventState.ADDED, new Callback() {
                 @Override
                 public ArrayList<ContentProviderOperation> buildOperations(Collection<StatusEvent> events) {
                     final ArrayList<ContentProviderOperation> operations = new ArrayList<>();
                     for (StatusEvent event : events) {
                         operations.add(ContentProviderOperation.newInsert(EventContract.StatusEntry.CONTENT_URI)
-                                                                .withValues(event.getContentValues())
-                                                                .build());
+                                .withValues(event.getContentValues())
+                                .build());
                     }
                     return operations;
                 }
             });
-            actionByState.put(EventsContainer.EventState.MODIFIED, new Callback() {
+            operationByState.put(EventsContainer.EventState.MODIFIED, new Callback() {
                 @Override
                 public ArrayList<ContentProviderOperation> buildOperations(Collection<StatusEvent> events) {
                     final ArrayList<ContentProviderOperation> operations = new ArrayList<>();
                     for (StatusEvent event : events) {
                         operations.add(ContentProviderOperation.newUpdate(EventContract.StatusEntry.CONTENT_URI)
-                                                                .withSelection(EventContract.StatusEntry._ID + " = ?", new String[] {event.getAsString(StatusEvent.FIELD_ID)})
-                                                                .withValues(event.getContentValues())
-                                                                .build());
+                                .withSelection(EventContract.StatusEntry._ID + " = ?", new String[] {event.getAsString(StatusEvent.FIELD_ID)})
+                                .withValues(event.getContentValues())
+                                .build());
                     }
                     return operations;
                 }
             });
-            actionByState.put(EventsContainer.EventState.DELETED, new Callback() {
+            operationByState.put(EventsContainer.EventState.DELETED, new Callback() {
                 @Override
                 public ArrayList<ContentProviderOperation> buildOperations(Collection<StatusEvent> events) {
                     final ArrayList<ContentProviderOperation> operations = new ArrayList<>();
                     for (StatusEvent event : events) {
                         operations.add(ContentProviderOperation.newDelete(EventContract.StatusEntry.CONTENT_URI)
-                                                                .withSelection(EventContract.StatusEntry._ID + " = ?", new String[] {event.getAsString(StatusEvent.FIELD_ID)})
-                                                                .build());
+                                .withSelection(EventContract.StatusEntry._ID + " = ?", new String[] {event.getAsString(StatusEvent.FIELD_ID)})
+                                .build());
                     }
                     return operations;
                 }
@@ -145,14 +144,16 @@ public class EventsManagementService extends IntentService {
                     case COMMAND_APPLY_FROM_CONTAINER:
                         if (data instanceof EventsContainer) {
                             final EventsContainer container = (EventsContainer) data;
+                            /* apply operations for each modified data (added, modified and deleted) */
                             for (EventsContainer.EventState state : EventsContainer.EventState.values()) {
                                 if (state == EventsContainer.EventState.UNCHANGED) {
+                                    /* skip unchanged data */
                                     continue;
                                 }
                                 final Collection<StatusEvent> events = container.getByState(state);
                                 if (!Utility.isCollectionNullOrEmpty(events)) {
                                     try {
-                                        context.getContentResolver().applyBatch(EventContract.CONTENT_AUTHORITY, actionByState.get(state).buildOperations(events));
+                                        context.getContentResolver().applyBatch(EventContract.CONTENT_AUTHORITY, operationByState.get(state).buildOperations(events));
 
                                     } catch (RemoteException | OperationApplicationException ex) {
                                         Log.w(LOG_TAG, ex.getMessage(), ex);
@@ -201,6 +202,7 @@ public class EventsManagementService extends IntentService {
                                                                                                                                      new String[] {notificationEvent.getAsString(StatusEvent.FIELD_CAR_NUMBER), notificationEvent.getAsString(StatusEvent.FIELD_NAME)},
                                                                                                                                      null));
                             if (existingEvents.contains(notificationEvent)) {
+                                /* trigger notification only if the data has not changed, changed data means deleted data or improper alarm management */
                                 new NotificationManager().showNotification(context, notificationEvent);
 
                             } else {
@@ -242,6 +244,9 @@ public class EventsManagementService extends IntentService {
         }
     }
 
+    /**
+     * Helper class that builds a command with its data for this service to execute
+     */
     public static class IntentBuilder {
         private String command;
         private Parcelable data;
@@ -278,6 +283,5 @@ public class EventsManagementService extends IntentService {
             return new IntentBuilder();
         }
     }
-
 
 }

@@ -117,6 +117,7 @@ public class CheckStatusService extends IntentService {
 
         public void execute(Context context) {
             if (!Utility.isStringNullOrEmpty(replySubject)) {
+                /* check if event present in DB, if not then try and fetch data from main/backup server and add results to DB */
                 Intent replyIntent = getFromCache(context, replySubject);
                 if (replyIntent == null) {
                     if (Utility.isNetworkConnected(context)) {
@@ -178,19 +179,21 @@ public class CheckStatusService extends IntentService {
             final long id = EventContract.StatusEntry.getIdFromUri(context.getContentResolver().insert(EventContract.StatusEntry.CONTENT_URI, statusEvent.getContentValues()));
             statusEvent.put(StatusEvent.FIELD_ID, id);
             context.startService(EventsManagementService.IntentBuilder.newInstance()
-                    .command(EventsManagementService.ACTION_ADD_ALARM)
-                    .data(statusEvent)
-                    .build(context));
+                                                                      .command(EventsManagementService.ACTION_ADD_ALARM)
+                                                                      .data(statusEvent)
+                                                                      .build(context));
 
         }
 
         private void deleteOldData(Context context) {
+            /* delete expired events older than 1 week */
             final int deletedRows = context.getContentResolver().delete(EventContract.StatusEntry.CONTENT_URI,
                                                                         EventContract.StatusEntry.COLUMN_END_DATE + " < ?",
                                                                             new String[] {"" + (new Date().getTime() - TimeUnit.DAYS.toMillis(7))});
             Log.i(LOG_TAG, String.format("Deleted %d rows from \"%s\" table", deletedRows, EventContract.StatusEntry.TABLE_NAME));
         }
 
+        /* plain old data fetch in order to keep the overall size as small as possible */
         private String fetchData(String baseUrl) {
             final Uri uri = buildUri(baseUrl);
             if (uri == null) {
@@ -255,6 +258,9 @@ public class CheckStatusService extends IntentService {
         }
     }
 
+    /**
+     * Helper class that build a command with its data for this service to execute
+     */
     public static class IntentBuilder {
 
         private String carPlate;

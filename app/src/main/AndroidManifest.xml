@@ -2,8 +2,11 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="to.uk.carminder.app" >
 
+    <!-- access web service, download data -->
     <uses-permission android:name="android.permission.INTERNET" />
+    <!-- verify network state before doing actual jobs -->
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <!-- reschedule any scheduled alarms at reboot -->
     <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
 
     <application
@@ -76,6 +79,7 @@
                 <action android:name="android.intent.action.BOOT_COMPLETED" />
             </intent-filter>
         </receiver>
+
     </application>
 
 </manifest>
