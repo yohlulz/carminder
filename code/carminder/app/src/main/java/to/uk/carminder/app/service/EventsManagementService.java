@@ -6,6 +6,7 @@ import android.content.ContentProviderOperation;
 import android.content.Context;
 import android.content.Intent;
 import android.content.OperationApplicationException;
+import android.database.Cursor;
 import android.os.Parcelable;
 import android.os.RemoteException;
 import android.support.v4.content.LocalBroadcastManager;
@@ -13,8 +14,11 @@ import android.util.Log;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
+import java.util.concurrent.TimeUnit;
 
 import to.uk.carminder.app.R;
 import to.uk.carminder.app.Utility;
@@ -56,6 +60,24 @@ public class EventsManagementService extends IntentService {
                    .execute(this);
     }
 
+    static Set<StatusEvent> getExistingEvents(Context context, String carPlate, String eventName) {
+        final Cursor statusCursor = context.getContentResolver().query(
+                EventContract.StatusEntry.CONTENT_URI,
+                StatusEvent.COLUMNS_STATUS_ENTRY,
+                EventProvider.SELECTION_CAR_PLATE + " AND " + EventContract.StatusEntry.COLUMN_EVENT_NAME + " = ?",
+                new String[] {carPlate, eventName},
+                null);
+        return StatusEvent.fromCursor(statusCursor);
+    }
+
+    static void deleteOldData(Context context) {
+            /* delete expired events older than 1 week */
+        final int deletedRows = context.getContentResolver().delete(EventContract.StatusEntry.CONTENT_URI,
+                EventContract.StatusEntry.COLUMN_END_DATE + " < ?",
+                new String[] {"" + (new Date().getTime() - TimeUnit.DAYS.toMillis(7))});
+        Log.i(LOG_TAG, String.format("Deleted %d rows from \"%s\" table", deletedRows, EventContract.StatusEntry.TABLE_NAME));
+    }
+
     private static class TaskBuilder {
         private static final Map<EventsContainer.EventState, Callback> operationByState = new HashMap<>();
 
@@ -65,6 +87,9 @@ public class EventsManagementService extends IntentService {
                 public ArrayList<ContentProviderOperation> buildOperations(Collection<StatusEvent> events) {
                     final ArrayList<ContentProviderOperation> operations = new ArrayList<>();
                     for (StatusEvent event : events) {
+                        if (event.getAsLong(StatusEvent.FIELD_ID) != null) {
+                            continue;
+                        }
                         operations.add(ContentProviderOperation.newInsert(EventContract.StatusEntry.CONTENT_URI)
                                 .withValues(event.getContentValues())
                                 .build());
@@ -219,6 +244,7 @@ public class EventsManagementService extends IntentService {
                         status = STATUS_ERROR;
                         message = context.getString(R.string.message_unknown_command);
                 }
+                deleteOldData(context);
                 LocalBroadcastManager.getInstance(context).sendBroadcast(buildReplyIntent(subject, status, message));
 
             } else {

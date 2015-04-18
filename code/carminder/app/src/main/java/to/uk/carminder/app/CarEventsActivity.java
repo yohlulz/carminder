@@ -98,7 +98,6 @@ public class CarEventsActivity extends ActionBarActivity {
 
             itemsView = (ListView) rootView.findViewById(R.id.list_item_car_event);
             itemsView.setAdapter(adapter);
-            registerForContextMenu(itemsView);
             if (!contextMenuLearnt) {
                 itemsView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                     @Override
@@ -191,7 +190,7 @@ public class CarEventsActivity extends ActionBarActivity {
             detailsDialog = new AlertDialog.Builder(getActivity()).setTitle(R.string.title_dialog_manage_car_event)
                     .setIcon(R.drawable.car_launcher)
                     .setView(dialogView)
-                    .setPositiveButton(R.string.action_add, new DialogInterface.OnClickListener() {
+                    .setPositiveButton(R.string.action_add_event, new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialog, int which) {
                             final Long expireDate = Utility.parse(datePicker.getYear(), datePicker.getMonth(), datePicker.getDayOfMonth());
@@ -243,35 +242,35 @@ public class CarEventsActivity extends ActionBarActivity {
             detailsDialog.show();
         }
 
-        @Override
-        public void onCreateContextMenu(ContextMenu menu, View v, ContextMenu.ContextMenuInfo menuInfo) {
-            getActivity().getMenuInflater().inflate(R.menu.context_status_manage_item, menu);
-            super.onCreateContextMenu(menu, v, menuInfo);
-        }
-
-        @Override
-        public boolean onContextItemSelected(MenuItem item) {
-            contextMenuLearnt = true;
-            itemsView.setOnItemClickListener(null);
-            final AdapterView.AdapterContextMenuInfo info = (AdapterView.AdapterContextMenuInfo) item.getMenuInfo();
-
-            switch (item.getItemId()) {
-                case R.id.status_edit_event:
-                    showDetailsView(null, adapter.getItem(info.position));
-                    break;
-
-                case R.id.status_delete_event:
-                    final StatusEvent deleteEvent = adapter.getItem(info.position);
-                    eventsContainer.remove(deleteEvent, true);
-                    adapter.remove(deleteEvent);
-                    adapter.notifyDataSetChanged();
-                    break;
-
-                default:
-                    return super.onContextItemSelected(item);
-            }
-            return true;
-        }
+//        @Override
+//        public void onCreateContextMenu(ContextMenu menu, View v, ContextMenu.ContextMenuInfo menuInfo) {
+//            getActivity().getMenuInflater().inflate(R.menu.context_status_manage_item, menu);
+//            super.onCreateContextMenu(menu, v, menuInfo);
+//        }
+//
+//        @Override
+//        public boolean onContextItemSelected(MenuItem item) {
+//            contextMenuLearnt = true;
+//            itemsView.setOnItemClickListener(null);
+//            final AdapterView.AdapterContextMenuInfo info = (AdapterView.AdapterContextMenuInfo) item.getMenuInfo();
+//
+//            switch (item.getItemId()) {
+//                case R.id.status_edit_event:
+//                    showDetailsView(null, adapter.getItem(info.position));
+//                    break;
+//
+//                case R.id.status_delete_event:
+//                    final StatusEvent deleteEvent = adapter.getItem(info.position);
+//                    eventsContainer.remove(deleteEvent, true);
+//                    adapter.remove(deleteEvent);
+//                    adapter.notifyDataSetChanged();
+//                    break;
+//
+//                default:
+//                    return super.onContextItemSelected(item);
+//            }
+//            return true;
+//        }
 
         @Override
         public void onCreate(Bundle savedInstanceState) {

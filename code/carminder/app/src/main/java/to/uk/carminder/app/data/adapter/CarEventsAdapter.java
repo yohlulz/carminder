@@ -2,6 +2,7 @@ package to.uk.carminder.app.data.adapter;
 
 import android.content.Context;
 import android.content.Intent;
+import android.preference.PreferenceFragment;
 import android.preference.PreferenceManager;
 import android.provider.CalendarContract;
 import android.util.Log;
@@ -16,14 +17,18 @@ import android.widget.TextView;
 import java.util.Calendar;
 import java.util.List;
 
+import to.uk.carminder.app.CarEventsFragment;
 import to.uk.carminder.app.R;
 import to.uk.carminder.app.Utility;
+import to.uk.carminder.app.data.EventsContainer;
 import to.uk.carminder.app.data.StatusEvent;
+import to.uk.carminder.app.service.EventsManagementService;
 
 public class CarEventsAdapter extends ArrayAdapter<StatusEvent> {
     private static final String LOG_TAG = CarEventsAdapter.class.getSimpleName();
 
     private final boolean showCarPlate;
+    private FragmentCallbacks listener;
 
     public CarEventsAdapter(Context context, List<StatusEvent> events) {
         this(context, events, false);
@@ -32,6 +37,10 @@ public class CarEventsAdapter extends ArrayAdapter<StatusEvent> {
     public CarEventsAdapter(Context context, List<StatusEvent> events, boolean showCarPlate) {
         super(context, 0, events);
         this.showCarPlate = showCarPlate;
+    }
+
+    public void setFragmentListener(FragmentCallbacks listener) {
+        this.listener = listener;
     }
 
     @Override
@@ -63,40 +72,40 @@ public class CarEventsAdapter extends ArrayAdapter<StatusEvent> {
         holder.itemPickerMonth.setText(event.getExpireMonth());
         holder.itemPickerDay.setText(event.getExpireDay());
         holder.itemPickerYear.setText(event.getExpireYear());
-        boolean prefAddCalendarEvents = PreferenceManager.getDefaultSharedPreferences(getContext()).getBoolean(getContext().getString(R.string.pref_key_calendar_events), Boolean.valueOf(getContext().getString(R.string.pref_default_calendar_events)));
-        if (showCarPlate && prefAddCalendarEvents) {
-            holder.btnAddToCalendar.setClickable(true);
-            holder.btnAddToCalendar.setVisibility(View.VISIBLE);
-            holder.btnAddToCalendar.setOnClickListener(new View.OnClickListener() {
+        //TODO refactor this section to reuse the actual click listener and not add new ones at each call
+        final boolean addToCalendar = PreferenceManager.getDefaultSharedPreferences(getContext()).getBoolean(getContext().getString(R.string.pref_key_calendar_events), Boolean.valueOf(getContext().getString(R.string.pref_default_calendar_events)));
+        if (addToCalendar) {
+            holder.dateView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    addEventToCalendar(event);
+                    if (listener != null) {
+                        listener.addEventToCalendar(event);
+                    }
                 }
             });
-        } else {
-            holder.btnAddToCalendar.setClickable(false);
-            holder.btnAddToCalendar.setVisibility(View.GONE);
-            holder.btnAddToCalendar.setOnClickListener(null);
-        }
 
+        } else {
+            holder.dateView.setOnClickListener(null);
+        }
+        holder.btnEditEvent.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (listener != null) {
+                    listener.editEvent(event);
+                }
+            }
+        });
+        holder.btnDeleteEvent.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (listener != null) {
+                    listener.deleteEvent(event);
+                }
+
+            }
+        });
 
         return convertView;
-    }
-
-    private void addEventToCalendar(StatusEvent event) {
-        final Intent intent = new Intent(Intent.ACTION_INSERT)
-                .setData(CalendarContract.Events.CONTENT_URI)
-                .putExtra(CalendarContract.EXTRA_EVENT_BEGIN_TIME, event.getAsLong(StatusEvent.FIELD_END_DATE))
-                .putExtra(CalendarContract.EXTRA_EVENT_END_TIME, event.getAsLong(StatusEvent.FIELD_END_DATE))
-                .putExtra(CalendarContract.Events.TITLE, String.format("Expires %s for %s", event.getAsString(StatusEvent.FIELD_NAME), event.getAsString(StatusEvent.FIELD_CAR_NUMBER)))
-                .putExtra(CalendarContract.Events.DESCRIPTION, event.getAsString(StatusEvent.FIELD_DESCRIPTION))
-                .putExtra(CalendarContract.Events.ALL_DAY, true);
-
-        if (intent.resolveActivity(getContext().getPackageManager()) != null) {
-            getContext().startActivity(Intent.createChooser(intent, "Choose app"));
-        } else {
-            Utility.notifyUser(getContext(), "There is no activity found for adding calendar events.");
-        }
     }
 
     private static class ViewHolder {
@@ -105,7 +114,10 @@ public class CarEventsAdapter extends ArrayAdapter<StatusEvent> {
         private TextView itemPickerMonth;
         private TextView itemPickerDay;
         private TextView itemPickerYear;
-        private ImageView btnAddToCalendar;
+        private ImageView btnEditEvent;
+        private ImageView btnDeleteEvent;
+        private View dateView;
+
 
         public ViewHolder(View view) {
             itemName = (TextView) view.findViewById(R.id.item_name);
@@ -113,7 +125,15 @@ public class CarEventsAdapter extends ArrayAdapter<StatusEvent> {
             itemPickerDay = (TextView) view.findViewById(R.id.item_picker_day);
             itemPickerMonth = (TextView) view.findViewById(R.id.item_picker_month);
             itemPickerYear = (TextView) view.findViewById(R.id.item_picker_year);
-            btnAddToCalendar = (ImageView) view.findViewById(R.id.btn_add_to_calendar);
+            btnEditEvent = (ImageView) view.findViewById(R.id.btn_event_edit);
+            btnDeleteEvent = (ImageView) view.findViewById(R.id.btn_event_delete);
+            dateView = view.findViewById(R.id.item_picker);
         }
+    }
+
+    public static interface FragmentCallbacks {
+        void addEventToCalendar(StatusEvent event);
+        void editEvent(StatusEvent event);
+        void deleteEvent(StatusEvent event);
     }
 }

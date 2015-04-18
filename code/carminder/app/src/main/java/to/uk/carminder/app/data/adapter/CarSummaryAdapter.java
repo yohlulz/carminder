@@ -2,6 +2,7 @@ package to.uk.carminder.app.data.adapter;
 
 import android.content.Context;
 import android.graphics.Typeface;
+import android.media.Image;
 import android.preference.PreferenceManager;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -16,7 +17,9 @@ import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 import to.uk.carminder.app.R;
+import to.uk.carminder.app.data.EventsContainer;
 import to.uk.carminder.app.data.StatusEvent;
+import to.uk.carminder.app.service.EventsManagementService;
 
 public class CarSummaryAdapter extends ArrayAdapter<StatusEvent> {
 
@@ -45,6 +48,15 @@ public class CarSummaryAdapter extends ArrayAdapter<StatusEvent> {
             /* keep it in layout to preserve alignment */
             holder.attentionView.setVisibility(View.INVISIBLE);
         }
+        holder.deleteView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                getContext().startService(EventsManagementService.IntentBuilder.newInstance()
+                                                    .command(EventsManagementService.COMMAND_DELETE_CAR)
+                                                    .data(event)
+                                                    .build(getContext()));
+            }
+        });
 
         return convertView;
     }
@@ -53,10 +65,12 @@ public class CarSummaryAdapter extends ArrayAdapter<StatusEvent> {
     private static class ViewHolder {
         private TextView carNumber;
         private ImageView attentionView;
+        private ImageView deleteView;
 
         public ViewHolder(View view) {
             carNumber = (TextView) view.findViewById(R.id.list_item_view_car_number);
             attentionView = (ImageView) view.findViewById(R.id.list_item_attention);
+            deleteView = (ImageView) view.findViewById(R.id.list_item_car_delete);
         }
     }
 }

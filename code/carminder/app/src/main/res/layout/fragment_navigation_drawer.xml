@@ -13,68 +13,115 @@
 
     <LinearLayout
         android:orientation="horizontal"
-        android:layout_width="fill_parent"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginLeft="10dp">
-
-        <LinearLayout
-            android:orientation="horizontal"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_weight="6"
-            android:id="@+id/list_item_car_view_all">
-
-            <ImageView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:id="@+id/imageView3"
-                android:src="@drawable/car_launcher" />
-
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="fill_parent"
-                android:text="@string/action_view_all_car_events"
-                android:id="@+id/textView2"
-                android:layout_gravity="center"
-                android:gravity="center_vertical"
-                android:layout_marginLeft="10dp" />
-
-        </LinearLayout>
+        android:id="@+id/btn_validate_status"
+        android:focusableInTouchMode="false"
+        android:layout_marginTop="15dp"
+        android:layout_marginLeft="10dp"
+        android:layout_marginRight="10dp">
 
         <ImageView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:id="@+id/btn_list_item_add_car"
-            android:src="@android:drawable/ic_input_add"
-            android:layout_gravity="center"
-            android:layout_weight="0"
-            android:padding="6dp" />
+            android:layout_width="0dp"
+            android:layout_height="fill_parent"
+            android:id="@+id/imageView4"
+            android:layout_weight="1"
+            android:src="@android:drawable/star_big_on" />
+
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="fill_parent"
+            android:text="@string/action_validate_status"
+            android:layout_weight="5"
+            android:gravity="center"
+            android:textAppearance="?android:textAppearanceLarge"
+            android:typeface="monospace" />
+
     </LinearLayout>
 
     <View
         android:layout_width="fill_parent"
         android:layout_height="1dp"
         android:background="@android:color/darker_gray"
-        android:layout_marginTop="5dp"
-        android:layout_marginBottom="15dp" />
+        android:layout_marginTop="20dp"
+        android:layout_marginBottom="5dp" />
 
-    <ScrollView
+    <LinearLayout
+        android:orientation="horizontal"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:id="@+id/scrollView2"
-        android:fillViewport="true"
-        android:layout_weight="1">
+        android:id="@+id/btn_show_events"
+        android:layout_marginLeft="10dp"
+        android:layout_marginRight="10dp">
 
-        <ListView
-            xmlns:android="http://schemas.android.com/apk/res/android"
-            xmlns:tools="http://schemas.android.com/tools"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:choiceMode="singleChoice"
-            android:divider="@android:color/transparent"
-            android:dividerHeight="0dp"
-            android:id="@+id/list_car_entries"
-            android:drawSelectorOnTop="false" />
-    </ScrollView>
+        <ImageView
+            android:layout_width="0dp"
+            android:layout_height="fill_parent"
+            android:id="@+id/imageView6"
+            android:src="@drawable/ic_calendar"
+            android:layout_weight="1" />
+
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="fill_parent"
+            android:text="@string/action_show_all_car_events"
+            android:id="@+id/textView5"
+            android:layout_gravity="center"
+            android:gravity="center"
+            android:layout_weight="5" />
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/btn_show_car_plates"
+        android:layout_marginLeft="10dp"
+        android:layout_marginRight="10dp">
+
+        <ImageView
+            android:layout_width="0dp"
+            android:layout_height="fill_parent"
+            android:id="@+id/imageView3"
+            android:src="@drawable/car_launcher"
+            android:layout_weight="1" />
+
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="fill_parent"
+            android:text="@string/action_show_car_plates"
+            android:id="@+id/textView2"
+            android:layout_gravity="center"
+            android:gravity="center"
+            android:layout_weight="5" />
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="10dp"
+        android:layout_marginRight="10dp"
+        android:layout_gravity="center"
+        android:id="@+id/btn_show_settings">
+
+        <ImageView
+            android:layout_width="0dp"
+            android:layout_height="fill_parent"
+            android:id="@+id/imageView2"
+            android:src="@android:drawable/ic_menu_preferences"
+            android:layout_weight="1" />
+
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="fill_parent"
+            android:text="@string/action_settings"
+            android:id="@+id/textView"
+            android:layout_gravity="center"
+            android:layout_weight="5"
+            android:gravity="center" />
+    </LinearLayout>
 
 </LinearLayout>

@@ -1,10 +1,8 @@
 package to.uk.carminder.app.service;
 
 import android.app.IntentService;
-import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
-import android.database.Cursor;
 import android.net.Uri;
 import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
@@ -14,16 +12,12 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
-import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.Set;
-import java.util.concurrent.TimeUnit;
 
 import to.uk.carminder.app.R;
 import to.uk.carminder.app.Utility;
-import to.uk.carminder.app.data.EventContract;
-import to.uk.carminder.app.data.EventProvider;
 import to.uk.carminder.app.data.StatusEvent;
 
 public class CheckStatusService extends IntentService {
@@ -123,8 +117,6 @@ public class CheckStatusService extends IntentService {
                     if (Utility.isNetworkConnected(context)) {
                         final String rawData = fetchData(mainURL);
                         replyIntent = buildReplyIntent(context, replySubject, (rawData != null) ? rawData : fetchData(backupURL), false);
-                        final StatusEvent generatedEvent = (StatusEvent) replyIntent.getParcelableExtra(Utility.FIELD_DATA);
-                        ensureData(context, generatedEvent);
 
                     } else {
                         replyIntent = buildReplyIntent(context, replySubject, null, true);
@@ -151,14 +143,8 @@ public class CheckStatusService extends IntentService {
         }
 
         private Intent getFromCache(Context context, String action) {
-            final Cursor statusCursor = context.getContentResolver().query(
-                                               EventContract.StatusEntry.CONTENT_URI,
-                                               StatusEvent.COLUMNS_STATUS_ENTRY,
-                                               EventProvider.SELECTION_CAR_PLATE + " AND " + EventContract.StatusEntry.COLUMN_EVENT_NAME + " = ?",
-                                               new String[] {carPlate, StatusEvent.FIELD_JSON_MTPL},
-                                               null);
-            final Set<StatusEvent> events = StatusEvent.fromCursor(statusCursor);
-            deleteOldData(context);
+            final Set<StatusEvent> events = EventsManagementService.getExistingEvents(context, carPlate, StatusEvent.FIELD_JSON_MTPL);
+            EventsManagementService.deleteOldData(context);
 
             if (!Utility.isCollectionNullOrEmpty(events)) {
                 final Intent statusIntent = new Intent();
@@ -169,28 +155,6 @@ public class CheckStatusService extends IntentService {
             }
 
             return null;
-        }
-
-        private void ensureData(Context context, StatusEvent statusEvent) {
-            if (statusEvent == null || !statusEvent.isValid() || getFromCache(context, ACTION_ON_DEMAND) != null) {
-                /* data already present or invalid data, drop request */
-                return;
-            }
-            final long id = EventContract.StatusEntry.getIdFromUri(context.getContentResolver().insert(EventContract.StatusEntry.CONTENT_URI, statusEvent.getContentValues()));
-            statusEvent.put(StatusEvent.FIELD_ID, id);
-            context.startService(EventsManagementService.IntentBuilder.newInstance()
-                                                                      .command(EventsManagementService.ACTION_ADD_ALARM)
-                                                                      .data(statusEvent)
-                                                                      .build(context));
-
-        }
-
-        private void deleteOldData(Context context) {
-            /* delete expired events older than 1 week */
-            final int deletedRows = context.getContentResolver().delete(EventContract.StatusEntry.CONTENT_URI,
-                                                                        EventContract.StatusEntry.COLUMN_END_DATE + " < ?",
-                                                                            new String[] {"" + (new Date().getTime() - TimeUnit.DAYS.toMillis(7))});
-            Log.i(LOG_TAG, String.format("Deleted %d rows from \"%s\" table", deletedRows, EventContract.StatusEntry.TABLE_NAME));
         }
 
         /* plain old data fetch in order to keep the overall size as small as possible */

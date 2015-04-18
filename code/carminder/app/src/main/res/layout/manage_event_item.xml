@@ -6,6 +6,16 @@
     <EditText
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:id="@+id/edit_event_car_number"
+        android:layout_marginLeft="20dp"
+        android:layout_marginRight="20dp"
+        android:singleLine="true"
+        android:hint="@string/hint_car_number_plate"
+        android:layout_marginTop="5dp" />
+
+    <EditText
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
         android:id="@+id/edit_event_item_name"
         android:layout_marginLeft="20dp"
         android:layout_marginRight="20dp"
@@ -19,7 +29,6 @@
         android:id="@+id/edit_event_item_description"
         android:layout_marginLeft="20dp"
         android:layout_marginRight="20dp"
-        android:layout_marginTop="15dp"
         android:layout_marginBottom="25dp"
         android:hint="@string/hint_event_description"
         android:singleLine="true" />
