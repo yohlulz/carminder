@@ -9,7 +9,6 @@
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="match_parent"
-        android:text="New Text"
         android:id="@+id/list_item_view_car_number"
         android:textAppearance="?android:textAppearanceLarge"
         android:minHeight="40dp"

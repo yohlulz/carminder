@@ -27,16 +27,10 @@ import to.uk.carminder.app.service.EventsManagementService;
 public class CarEventsAdapter extends ArrayAdapter<StatusEvent> {
     private static final String LOG_TAG = CarEventsAdapter.class.getSimpleName();
 
-    private final boolean showCarPlate;
     private FragmentCallbacks listener;
 
     public CarEventsAdapter(Context context, List<StatusEvent> events) {
-        this(context, events, false);
-    }
-
-    public CarEventsAdapter(Context context, List<StatusEvent> events, boolean showCarPlate) {
         super(context, 0, events);
-        this.showCarPlate = showCarPlate;
     }
 
     public void setFragmentListener(FragmentCallbacks listener) {
@@ -62,7 +56,8 @@ public class CarEventsAdapter extends ArrayAdapter<StatusEvent> {
             container.getBackground().setAlpha(100);
         }
         holder.itemName.setText(event.getAsString(StatusEvent.FIELD_NAME));
-        final String description = showCarPlate ? event.getAsString(StatusEvent.FIELD_CAR_NUMBER) : event.getAsString(StatusEvent.FIELD_DESCRIPTION);
+        holder.itemCarPlate.setText(event.getAsString(StatusEvent.FIELD_CAR_NUMBER));
+        final String description = event.getAsString(StatusEvent.FIELD_DESCRIPTION);
         if (Utility.isStringNullOrEmpty(description)) {
             holder.itemDescription.setVisibility(View.GONE);
         } else {
@@ -110,6 +105,7 @@ public class CarEventsAdapter extends ArrayAdapter<StatusEvent> {
 
     private static class ViewHolder {
         private TextView itemName;
+        private TextView itemCarPlate;
         private TextView itemDescription;
         private TextView itemPickerMonth;
         private TextView itemPickerDay;
@@ -121,6 +117,7 @@ public class CarEventsAdapter extends ArrayAdapter<StatusEvent> {
 
         public ViewHolder(View view) {
             itemName = (TextView) view.findViewById(R.id.item_name);
+            itemCarPlate = (TextView) view.findViewById(R.id.item_car_plate);
             itemDescription = (TextView) view.findViewById(R.id.item_description);
             itemPickerDay = (TextView) view.findViewById(R.id.item_picker_day);
             itemPickerMonth = (TextView) view.findViewById(R.id.item_picker_month);

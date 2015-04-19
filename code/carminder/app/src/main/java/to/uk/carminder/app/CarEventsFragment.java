@@ -66,7 +66,7 @@ public class CarEventsFragment extends Fragment implements LoaderManager.LoaderC
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fragment_main, container, false);
         final ListView view = (ListView) rootView.findViewById(R.id.list_car_details);
-        adapter = new CarEventsAdapter(getActivity(), new ArrayList<StatusEvent>(), true);
+        adapter = new CarEventsAdapter(getActivity(), new ArrayList<StatusEvent>());
         view.setAdapter(adapter);
 
         return rootView;

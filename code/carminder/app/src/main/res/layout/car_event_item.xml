@@ -20,7 +20,6 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Feb"
             android:id="@+id/item_picker_month"
             android:textAppearance="?android:textAppearanceSmall"
             android:layout_weight="0" />
@@ -28,7 +27,6 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="9"
             android:id="@+id/item_picker_day"
             android:textAppearance="?android:textAppearanceLarge"
             android:singleLine="true"
@@ -39,7 +37,6 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="2015"
             android:id="@+id/item_picker_year"
             android:textAppearance="?android:textAppearanceLarge"
             android:layout_gravity="right"
@@ -60,15 +57,29 @@
         android:layout_marginLeft="7dp"
         android:layout_marginRight="7dp">
 
-        <TextView
+        <LinearLayout
+            android:orientation="horizontal"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="RCA"
-            android:id="@+id/item_name"
-            android:textAppearance="?android:textAppearanceLarge"
-            android:gravity="center"
-            android:layout_weight="1"
-            android:layout_gravity="center_vertical" />
+            android:layout_weight="1">
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:id="@+id/item_name"
+                android:textAppearance="?android:textAppearanceLarge"
+                android:gravity="center"
+                android:layout_gravity="center_vertical"
+                android:layout_weight="1" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/item_car_plate"
+                android:layout_weight="0"
+                android:layout_gravity="center_vertical"
+                android:layout_marginRight="5dp" />
+        </LinearLayout>
 
         <TextView
             android:layout_width="match_parent"
@@ -78,8 +89,7 @@
             android:singleLine="false"
             android:elegantTextHeight="false"
             android:gravity="center_horizontal"
-            android:layout_weight="0"
-            android:text="gtfrf yf g tfyguhi tfyg u" />
+            android:layout_weight="0" />
 
     </LinearLayout>
 

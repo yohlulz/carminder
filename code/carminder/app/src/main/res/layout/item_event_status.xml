@@ -32,7 +32,6 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Feb"
                 android:id="@+id/item_picker_month_start"
                 android:textAppearance="?android:textAppearanceSmall"
                 android:layout_weight="0" />
@@ -40,7 +39,6 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="9"
                 android:id="@+id/item_picker_day_start"
                 android:textAppearance="?android:textAppearanceLarge"
                 android:singleLine="true"
@@ -51,7 +49,6 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="2015"
                 android:id="@+id/item_picker_year_start"
                 android:textAppearance="?android:textAppearanceLarge"
                 android:layout_gravity="right"
@@ -82,7 +79,6 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Feb"
                 android:id="@+id/item_picker_month_end"
                 android:textAppearance="?android:textAppearanceSmall"
                 android:layout_weight="0" />
@@ -90,7 +86,6 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="9"
                 android:id="@+id/item_picker_day_end"
                 android:textAppearance="?android:textAppearanceLarge"
                 android:singleLine="true"
@@ -101,7 +96,6 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="2015"
                 android:id="@+id/item_picker_year_end"
                 android:textAppearance="?android:textAppearanceLarge"
                 android:layout_gravity="right"
@@ -135,7 +129,6 @@
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="RCA"
             android:id="@+id/item_name"
             android:textAppearance="?android:textAppearanceLarge"
             android:gravity="center"
@@ -150,8 +143,7 @@
             android:singleLine="false"
             android:elegantTextHeight="false"
             android:gravity="center_horizontal"
-            android:layout_weight="0"
-            android:text="rtgbvfcdx rthgf hgfr eegrgeg egergrge egergeg rgergerge regergr gergerg egerger g ergergerg ergergerge g " />
+            android:layout_weight="0" />
     </LinearLayout>
 
 </LinearLayout>
