@@ -124,12 +124,16 @@ public class MainActivity extends ActionBarActivity implements UserActionsFragme
                 break;
 
             case R.id.action_add_event:
-                state = EventsContainer.EventState.ADDED;
-                final StatusEvent event = new StatusEvent();
-                if (isCustomPlate(latestValue)) {
-                    event.put(StatusEvent.FIELD_CAR_NUMBER, latestValue);
+                if (getString(R.string.action_show_car_plates).equals(latestValue)) {
+                    mUserActionsFragment.showValidateDialog(null, null);
+                } else {
+                    state = EventsContainer.EventState.ADDED;
+                    final StatusEvent event = new StatusEvent();
+                    if (isCustomPlate(latestValue)) {
+                        event.put(StatusEvent.FIELD_CAR_NUMBER, latestValue);
+                    }
+                    showEventDialog(event);
                 }
-                showEventDialog(event);
                 break;
 
             default:
@@ -315,7 +319,7 @@ public class MainActivity extends ActionBarActivity implements UserActionsFragme
         });
 
         editDialog = new AlertDialog.Builder(this)
-                .setTitle(EventsContainer.EventState.MODIFIED == state ? R.string.action_add_event : R.string.action_modify_event)
+                .setTitle(EventsContainer.EventState.MODIFIED != state ? R.string.action_add_event : R.string.action_modify_event)
                 .setIcon(R.drawable.car_launcher)
                 .setView(dialogView)
                 .setNegativeButton(R.string.action_cancel, new DialogInterface.OnClickListener() {

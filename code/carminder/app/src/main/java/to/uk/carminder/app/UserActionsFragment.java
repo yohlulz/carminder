@@ -187,7 +187,7 @@ public class UserActionsFragment extends Fragment {
         statusDialog.show();
     }
 
-    private void showValidateDialog(Bundle savedInstanceState, String carPlate) {
+    public void showValidateDialog(Bundle savedInstanceState, String carPlate) {
         final View dialogView = getLayoutInflater(savedInstanceState).inflate(R.layout.item_event_validate, null);
         final View inputView = dialogView.findViewById(R.id.car_event_item_container);
         final EditText editText = (EditText) inputView.findViewById(R.id.input_text_car_plate);
