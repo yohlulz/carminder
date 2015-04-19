@@ -11,7 +11,8 @@
         android:layout_marginRight="20dp"
         android:singleLine="true"
         android:hint="@string/hint_car_number_plate"
-        android:layout_marginTop="5dp" />
+        android:layout_marginTop="5dp"
+        android:inputType="textCapCharacters" />
 
     <EditText
         android:layout_width="match_parent"

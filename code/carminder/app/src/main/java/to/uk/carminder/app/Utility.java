@@ -69,9 +69,4 @@ public class Utility {
 
         return cal;
     }
-
-    public static void clearSearchHistory(Context context) {
-        new SearchRecentSuggestions(context, EventSuggestionProvider.AUTHORITY, EventSuggestionProvider.MODE).clearHistory();
-        notifyUser(context, "Cleared search history");
-    }
 }

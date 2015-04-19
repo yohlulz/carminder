@@ -5,7 +5,7 @@
     android:paddingTop="6dp"
     android:paddingBottom="6dp"
     android:paddingLeft="8dp"
-    android:paddingRight="8dp"
+    android:paddingRight="2dp"
     android:id="@+id/car_event_item_container">
 
     <LinearLayout
@@ -84,30 +84,26 @@
     </LinearLayout>
 
     <LinearLayout
-        android:orientation="vertical"
+        android:orientation="horizontal"
         android:layout_width="wrap_content"
         android:layout_height="fill_parent"
         android:gravity="center_vertical">
 
         <ImageView
-            android:layout_width="wrap_content"
-            android:layout_height="0dp"
+            android:layout_width="0dp"
+            android:layout_height="fill_parent"
             android:id="@+id/btn_event_edit"
             android:src="@android:drawable/ic_menu_edit"
             android:layout_gravity="center_vertical"
-            android:layout_weight="1"
-            android:layout_marginBottom="2dp"
-            android:padding="2dp" />
+            android:layout_weight="1" />
 
         <ImageView
-            android:layout_width="wrap_content"
-            android:layout_height="0dp"
+            android:layout_width="0dp"
+            android:layout_height="fill_parent"
             android:id="@+id/btn_event_delete"
             android:src="@android:drawable/ic_menu_delete"
             android:layout_gravity="center_vertical"
-            android:layout_weight="1"
-            android:layout_marginTop="2dp"
-            android:padding="2dp" />
+            android:layout_weight="1" />
     </LinearLayout>
 
 </LinearLayout>

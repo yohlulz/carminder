@@ -22,6 +22,7 @@
     <string name="action_save">Save</string>
     <string name="action_save_results">Save results</string>
     <string name="action_ok">OK</string>
+    <string name="confirm_action">Are you sure ?</string>
 
     <!-- Preferences -->
     <string name="pref_title_days">Notify before event days</string>
@@ -33,7 +34,7 @@
     <string name="pref_key_calendar_events" translatable="false">calendar_events</string>
     <string name="pref_summary_off_calendar_events">Disabled</string>
     <string name="pref_summary_on_calendar_events">Enabled</string>
-    <string name="pref_default_calendar_events" translatable="false">true</string>
+    <string name="pref_default_calendar_events" translatable="false">false</string>
 
 
     <string name="title_activity_status">Check status</string>

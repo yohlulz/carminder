@@ -36,28 +36,6 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value=".MainActivity" />
         </activity>
-        <activity
-            android:name=".StatusActivity"
-            android:label="@string/title_activity_status"
-            android:launchMode="singleTop"
-            android:parentActivityName=".MainActivity"
-            android:theme="@style/StatusTheme" >
-            <intent-filter>
-                <action android:name="android.intent.action.SEARCH" />
-            </intent-filter>
-
-            <meta-data
-                android:name="android.support.PARENT_ACTIVITY"
-                android:value=".MainActivity" />
-        </activity>
-        <activity
-            android:name=".CarEventsActivity"
-            android:label="@string/title_activity_car_events"
-            android:parentActivityName=".MainActivity" >
-            <meta-data
-                android:name="android.support.PARENT_ACTIVITY"
-                android:value=".MainActivity" />
-        </activity>
 
         <service android:name=".service.CheckStatusService" />
         <service android:name=".service.EventsManagementService" />

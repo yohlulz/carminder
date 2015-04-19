@@ -1,6 +1,8 @@
 package to.uk.carminder.app.data.adapter;
 
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.graphics.Typeface;
 import android.media.Image;
 import android.preference.PreferenceManager;
@@ -51,10 +53,26 @@ public class CarSummaryAdapter extends ArrayAdapter<StatusEvent> {
         holder.deleteView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                getContext().startService(EventsManagementService.IntentBuilder.newInstance()
-                                                    .command(EventsManagementService.COMMAND_DELETE_CAR)
-                                                    .data(event)
-                                                    .build(getContext()));
+                new AlertDialog.Builder(getContext())
+                        .setTitle(R.string.confirm_action)
+                        .setPositiveButton(R.string.action_delete_event, new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                getContext().startService(EventsManagementService.IntentBuilder.newInstance()
+                                        .command(EventsManagementService.COMMAND_DELETE_CAR)
+                                        .data(event)
+                                        .build(getContext()));
+                                dialog.dismiss();
+                            }
+                        })
+                        .setNegativeButton(R.string.action_cancel, new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                dialog.dismiss();
+                            }
+                        })
+                        .create()
+                        .show();
             }
         });
 

@@ -123,33 +123,9 @@ public class UserActionsFragment extends Fragment {
             @Override
             public void onClick(View v) {
                 startActivity(new Intent(getActivity(), SettingsActivity.class));
-                //TODO check if select action is required (tablet mode)
             }
         });
 
-//        rootView.findViewById(R.id.list_item_car_view_all).setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-//                selectItem(-1, true);
-//            }
-//        });
-//        rootView.findViewById(R.id.btn_list_item_add_car).setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-//                startActivity(new Intent(getActivity(), CarEventsActivity.class));
-//            }
-//        });
-//        mDrawerListView = (ListView) rootView.findViewById(R.id.list_car_entries);
-//        mDrawerListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-//            @Override
-//            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-//                selectItem(position, true);
-//            }
-//        });
-//        mDrawerListView.setAdapter(adapter);
-//        if (mCurrentSelectedPosition >= 0) {
-//            mDrawerListView.setItemChecked(mCurrentSelectedPosition, true);
-//        }
         return rootView;
     }
 
@@ -241,6 +217,7 @@ public class UserActionsFragment extends Fragment {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                         showValidateDialog = false;
+                        validateCarPlate = null;
                         dialog.dismiss();
                     }
                 })
@@ -260,6 +237,7 @@ public class UserActionsFragment extends Fragment {
                                     .build(getActivity()));
 
                         }
+                        validateCarPlate = null;
                     }
                 })
                 .create();
@@ -276,6 +254,7 @@ public class UserActionsFragment extends Fragment {
         this.isDrawerLocked = isDrawerLocked;
         mFragmentContainerView = getActivity().findViewById(fragmentId);
         mDrawerLayout = drawerLayout;
+        mDrawerLayout.setFocusable(false);
         if (isDrawerLocked && mDrawerLayout != null) {
             mDrawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_OPEN);
             mDrawerLayout.setScrimColor(Color.TRANSPARENT);
@@ -443,34 +422,6 @@ public class UserActionsFragment extends Fragment {
 
         return super.onOptionsItemSelected(item);
     }
-
-//    @Override
-//    public boolean onContextItemSelected(MenuItem item) {
-//        final AdapterView.AdapterContextMenuInfo info = (AdapterView.AdapterContextMenuInfo) item.getMenuInfo();
-//        final StatusEvent selectedEvent = adapter.getItem(info.position);
-//
-//        switch (item.getItemId()) {
-//            case R.id.status_edit_event:
-//                final Intent editIntent = new Intent(getActivity(), CarEventsActivity.class);
-//                editIntent.putExtra(Utility.FIELD_DATA, selectedEvent.getAsString(StatusEvent.FIELD_CAR_NUMBER));
-//                startActivity(editIntent);
-//                break;
-//
-//            case R.id.status_delete_event:
-//                adapter.remove(selectedEvent);
-//                adapter.notifyDataSetChanged();
-//                //TODO add reply listener and handle status code
-//                getActivity().startService(EventsManagementService.IntentBuilder.newInstance()
-//                                                                              .command(EventsManagementService.COMMAND_DELETE_CAR)
-//                                                                              .data(selectedEvent)
-//                                                                              .build(getActivity()));
-//                break;
-//
-//            default:
-//                return super.onContextItemSelected(item);
-//        }
-//        return true;
-//    }
 
     private void showGlobalContextActionBar(String title) {
         ActionBar actionBar = getActionBar();

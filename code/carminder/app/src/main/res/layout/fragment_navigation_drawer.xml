@@ -17,9 +17,10 @@
         android:layout_height="wrap_content"
         android:id="@+id/btn_validate_status"
         android:focusableInTouchMode="false"
-        android:layout_marginTop="15dp"
-        android:layout_marginLeft="10dp"
-        android:layout_marginRight="10dp">
+        android:paddingLeft="10dp"
+        android:paddingTop="15dp"
+        android:paddingRight="10dp"
+        android:paddingBottom="15dp">
 
         <ImageView
             android:layout_width="0dp"
@@ -43,8 +44,8 @@
         android:layout_width="fill_parent"
         android:layout_height="1dp"
         android:background="@android:color/darker_gray"
-        android:layout_marginTop="20dp"
-        android:layout_marginBottom="5dp" />
+        android:layout_marginBottom="5dp"
+        android:layout_marginTop="5dp" />
 
     <LinearLayout
         android:orientation="horizontal"
