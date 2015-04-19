@@ -1,0 +1,149 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="horizontal" android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:paddingTop="6dp"
+    android:paddingBottom="6dp"
+    android:paddingLeft="8dp"
+    android:paddingRight="8dp"
+    android:id="@+id/car_event_item_status">
+
+    <LinearLayout
+        android:orientation="vertical"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:paddingTop="2dp"
+        android:paddingBottom="2dp"
+        android:layout_gravity="center_vertical"
+        android:baselineAligned="false"
+        android:measureWithLargestChild="false"
+        android:nestedScrollingEnabled="false"
+        android:id="@+id/list_item_date_status">
+
+        <LinearLayout
+            android:orientation="vertical"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:background="@drawable/ic_date"
+            android:layout_gravity="center_vertical">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/item_picker_month_start"
+                android:textAppearance="?android:textAppearanceSmall"
+                android:layout_weight="0" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/item_picker_day_start"
+                android:textAppearance="?android:textAppearanceLarge"
+                android:singleLine="true"
+                android:textStyle="bold"
+                android:layout_marginTop="-3dp"
+                android:layout_marginBottom="-3dp" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/item_picker_year_start"
+                android:textAppearance="?android:textAppearanceLarge"
+                android:layout_gravity="right"
+                android:textStyle="italic"
+                android:textSize="@dimen/abc_text_size_caption_material"
+                android:layout_marginRight="4dp"
+                android:layout_marginTop="-3dp" />
+
+        </LinearLayout>
+
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/imageView"
+            android:src="@android:drawable/arrow_down_float"
+            android:layout_marginTop="8dp"
+            android:layout_marginBottom="8dp" />
+
+
+        <LinearLayout
+            android:orientation="vertical"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:background="@drawable/ic_date"
+            android:layout_gravity="center_vertical">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/item_picker_month_end"
+                android:textAppearance="?android:textAppearanceSmall"
+                android:layout_weight="0" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/item_picker_day_end"
+                android:textAppearance="?android:textAppearanceLarge"
+                android:singleLine="true"
+                android:textStyle="bold"
+                android:layout_marginTop="-3dp"
+                android:layout_marginBottom="-3dp" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/item_picker_year_end"
+                android:textAppearance="?android:textAppearanceLarge"
+                android:layout_gravity="right"
+                android:textStyle="italic"
+                android:textSize="@dimen/abc_text_size_caption_material"
+                android:layout_marginRight="4dp"
+                android:layout_marginTop="-3dp" />
+
+        </LinearLayout>
+
+    </LinearLayout>
+
+    <View
+        android:layout_height="fill_parent"
+        android:layout_width="1dp"
+        android:background="@android:color/darker_gray"
+        android:layout_marginTop="10dp"
+        android:layout_marginBottom="10dp"
+        android:id="@+id/list_item_status_separator"
+        android:layout_marginLeft="8dp"
+        android:layout_marginRight="8dp" />
+
+    <LinearLayout
+        android:orientation="vertical"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:id="@+id/item_name_container"
+        android:layout_gravity="center">
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/item_name"
+            android:textAppearance="?android:textAppearanceLarge"
+            android:gravity="center"
+            android:layout_weight="1"
+            android:layout_gravity="center_vertical" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/item_description"
+            android:textAppearance="?android:textAppearanceSmall"
+            android:singleLine="false"
+            android:elegantTextHeight="false"
+            android:gravity="center_horizontal"
+            android:layout_weight="0" />
+    </LinearLayout>
+
+</LinearLayout>

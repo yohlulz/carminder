@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="to.uk.carminder.app" >
+
+    <!-- access web service, download data -->
+    <uses-permission android:name="android.permission.INTERNET" />
+    <!-- verify network state before doing actual jobs -->
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <!-- reschedule any scheduled alarms at reboot -->
+    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
+    <!-- Vibrate at notification -->
+    <uses-permission android:name="android.permission.VIBRATE" />
+
+    <application
+        android:allowBackup="true"
+        android:icon="@mipmap/ic_launcher"
+        android:label="@string/app_name"
+        android:logo="@drawable/car_launcher"
+        android:theme="@style/AppTheme" >
+        <activity
+            android:name=".MainActivity"
+            android:label="@string/app_name" >
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+
+        </activity>
+        <activity
+            android:name=".SettingsActivity"
+            android:label="@string/title_settings"
+            android:parentActivityName=".MainActivity"
+            android:theme="@style/SettingsTheme" >
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".MainActivity" />
+        </activity>
+
+        <service android:name=".service.CheckStatusService" />
+        <service android:name=".service.EventsManagementService" />
+
+        <provider
+            android:name=".data.EventSuggestionProvider"
+            android:authorities="@string/search_authority" />
+        <provider
+            android:name=".data.EventProvider"
+            android:authorities="@string/content_authority"
+            android:exported="false" />
+
+        <receiver android:name=".service.RebootReceiver">
+            <intent-filter>
+                <action android:name="android.intent.action.BOOT_COMPLETED" />
+            </intent-filter>
+        </receiver>
+
+    </application>
+
+</manifest>

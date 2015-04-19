@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width = "match_parent"
+    android:layout_height="match_parent">
+
+    <CheckBoxPreference
+        android:title="@string/pref_title_calendar_events"
+        android:key="@string/pref_key_calendar_events"
+        android:summaryOff="@string/pref_summary_off_calendar_events"
+        android:summaryOn="@string/pref_summary_on_calendar_events"
+        android:defaultValue="@string/pref_default_calendar_events" />
+
+    <EditTextPreference
+        android:title="@string/pref_title_days"
+        android:key="@string/pref_key_days"
+        android:defaultValue="@string/pref_default_days"
+        android:inputType="number"
+        android:singleLine="true"/>
+
+</PreferenceScreen>
