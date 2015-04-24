@@ -21,8 +21,8 @@ public class NotificationManager {
         final NotificationCompat.Builder notificationBuilder = new NotificationCompat.Builder(context)
                                                                                 .setSmallIcon(R.mipmap.ic_launcher)
                                                                                 .setLargeIcon(BitmapFactory.decodeResource(context.getResources(), R.drawable.ic_alarm))
-                                                                                .setContentTitle("Events about to expire")
-                                                                                .setContentText(notificationEvent.getSummary());
+                                                                                .setContentTitle(context.getString(R.string.notification_title))
+                                                                                .setContentText(notificationEvent.getSummary(context));
         notificationBuilder.setContentIntent(TaskStackBuilder.create(context)
                                                              .addNextIntent(new Intent(context, MainActivity.class).addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP))
                                                              .getPendingIntent(requestCode, PendingIntent.FLAG_UPDATE_CURRENT));
