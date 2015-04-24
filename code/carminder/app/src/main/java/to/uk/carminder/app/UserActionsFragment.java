@@ -227,7 +227,7 @@ public class UserActionsFragment extends Fragment {
                         showValidateDialog = false;
                         dialog.dismiss();
                         if (Utility.isStringNullOrEmpty(validateCarPlate)) {
-                            Utility.notifyUser(getActivity(), "Will not validate an empty car plate, please retry");
+                            Utility.notifyUser(getActivity(), getString(R.string.message_invalid_car_plate_empty_retry));
 
                         } else {
                             getActivity().startService(CheckStatusService.IntentBuilder.newInstance()

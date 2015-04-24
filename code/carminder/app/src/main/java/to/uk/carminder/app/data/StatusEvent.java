@@ -93,7 +93,6 @@ public class StatusEvent implements Parcelable, Comparable<StatusEvent> {
     public static final String FIELD_JSON_MTPL = "MTPL";
     private static final String FIELD_JSON_END_DATE = "endDate";
     private static final String FIELD_JSON_START_DATE = "startDate";
-    private static final StatusEvent INVALID_EVENT = new StatusEvent(null, null, null, "No data received", "Server could be down, please try again later");
 
     public static final Parcelable.Creator<StatusEvent> CREATOR = new Parcelable.Creator<StatusEvent>() {
         @Override
@@ -243,10 +242,9 @@ public class StatusEvent implements Parcelable, Comparable<StatusEvent> {
         return (carPlate != null) ? carPlate.compareTo(another.getAsString(FIELD_CAR_NUMBER)) : 0;
     }
 
-
-    public static StatusEvent fromJSON(String data) {
+    public static StatusEvent fromJSON(Context context, String data) {
         if (Utility.isStringNullOrEmpty(data)) {
-            return INVALID_EVENT;
+            return new StatusEvent(null, null, null, context.getString(R.string.message_no_data_received), context.getString(R.string.message_server_down));
         }
         try {
             final JSONObject event = new JSONObject(data);
@@ -260,7 +258,7 @@ public class StatusEvent implements Parcelable, Comparable<StatusEvent> {
             Log.w(LOG_TAG, ex.getMessage(), ex);
         }
 
-        return INVALID_EVENT;
+        return new StatusEvent(null, null, null, context.getString(R.string.message_no_data_received), context.getString(R.string.message_server_down));
     }
 
     public static Set<StatusEvent> fromCursor(Cursor cursor) {
@@ -286,7 +284,7 @@ public class StatusEvent implements Parcelable, Comparable<StatusEvent> {
         return result;
     }
 
-    public String getSummary() {
-        return String.format("%s   Event %s # %s", getExpireDate(), getAsString(FIELD_NAME), getAsString(FIELD_CAR_NUMBER));
+    public String getSummary(Context context) {
+        return String.format(context.getString(R.string.notification_message), getExpireDate(), getAsString(FIELD_NAME), getAsString(FIELD_CAR_NUMBER));
     }
 }

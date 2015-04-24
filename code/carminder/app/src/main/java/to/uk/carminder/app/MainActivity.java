@@ -191,10 +191,10 @@ public class MainActivity extends ActionBarActivity implements UserActionsFragme
                 .putExtra(CalendarContract.Events.ALL_DAY, true);
 
         if (intent.resolveActivity(getPackageManager()) != null) {
-            startActivity(Intent.createChooser(intent, "Choose app"));
+            startActivity(Intent.createChooser(intent, getString(R.string.message_choose_app)));
 
         } else {
-            Utility.notifyUser(this, "There is no activity found for adding calendar events.");
+            Utility.notifyUser(this, getString(R.string.message_no_activity_found));
         }
 
     }
@@ -338,15 +338,15 @@ public class MainActivity extends ActionBarActivity implements UserActionsFragme
                         final String eventName = String.valueOf(eventNameView.getText());
                         final String eventDescription = String.valueOf(eventDescriptionView.getText());
                         if (Utility.isStringNullOrEmpty(carPlate)) {
-                            Utility.notifyUser(MainActivity.this, "Invalid car plate, please retry");
+                            Utility.notifyUser(MainActivity.this, getString(R.string.message_invalid_car_plate_retry));
                             return;
                         }
                         if (Utility.isStringNullOrEmpty(eventName)) {
-                            Utility.notifyUser(MainActivity.this, "Invalid event name, please retry");
+                            Utility.notifyUser(MainActivity.this, getString(R.string.message_invalid_event_retry));
                             return;
                         }
                         if (expireDate < today.getTimeInMillis()) {
-                            Utility.notifyUser(MainActivity.this, "Invalid expire date, please retry");
+                            Utility.notifyUser(MainActivity.this, getString(R.string.message_invalid_expire_date_retry));
                             return;
                         }
                         event.put(StatusEvent.FIELD_CAR_NUMBER, carPlate);
