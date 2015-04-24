@@ -1,0 +1,50 @@
+<resources>
+    <string name="title_settings">Preferinţe</string>
+
+    <string name="navigation_drawer_open">Deschide meniu opţiuni</string>
+    <string name="navigation_drawer_close">Închide meniu opţiuni</string>
+
+    <string name="action_validate_status">Verifică RCA</string>
+    <string name="action_show_car_plates">Maşini</string>
+    <string name="action_show_all_car_events">Evenimente</string>
+    <string name="action_settings">Preferinţe</string>
+
+    <string name="action_add_event">Adaugă eveniment</string>
+    <string name="action_modify_event">Modifică eveniment</string>
+    <string name="action_delete_event">Şterge</string>
+    <string name="action_cancel">Anulează</string>
+    <string name="action_validate">Verifică</string>
+    <string name="action_save">Salvează</string>
+    <string name="action_save_results">Salvează rezultate</string>
+    <string name="action_ok">OK</string>
+    <string name="confirm_action">Confirmaţi acţiunea</string>
+
+    <!-- Preferences -->
+    <string name="pref_title_days">Notifică cu X zile înainte</string>
+
+    <string name="pref_title_calendar_events">Adaugă eveniment în calendar</string>
+    <string name="pref_summary_off_calendar_events">Dezactivat</string>
+    <string name="pref_summary_on_calendar_events">Activat</string>
+
+    <string name="title_activity_status">Verifică validitate</string>
+
+    <!-- messages -->
+    <string name="message_no_internet_connection">Internet indisponibil</string>
+    <string name="message_connect_to_internet">Verificaţi conexiunea la Internet şi reîncercaţi</string>
+
+    <string name="hint_car_number_plate">Numărul maşinii, ex: CJ00ABC</string>
+    <string name="hint_event_description">Descriere eveniment</string>
+    <string name="hint_event_name">Nume eveniment</string>
+    <string name="notification_title">Evenimente ce vor expira</string>
+    <string name="message_press_for_actions">Apăsaţi pe data unui eveniment pentru a-l adăuga în calendar</string>
+    <string name="message_choose_app">Alegeţi aplicaţia</string>
+    <string name="message_no_activity_found">Nu a fost găsită nicio aplicaţie pentru a adăuga evenimentul în calendar</string>
+    <string name="message_invalid_car_plate_retry">Numărul maşinii este invalid</string>
+    <string name="message_invalid_event_retry">Numele evenimentului este invalid</string>
+    <string name="message_invalid_expire_date_retry">Data de expirare este invalidă</string>
+    <string name="message_invalid_car_plate_empty_retry">Adăugaţi un număr de maşină şi reîncercaţi</string>
+    <string name="message_no_data_received">Nu au fost primite date</string>
+    <string name="message_server_down">Server indisponibil, vă rugam încercaţi mai târziu</string>
+    <string name="notification_message">%1$s   Eveniment %2$s # %3$s</string>
+
+</resources>

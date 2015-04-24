@@ -132,7 +132,7 @@ public class CheckStatusService extends IntentService {
         private Intent buildReplyIntent(Context context, String action, String rawData, boolean setInternetUnavailable) {
             final Intent intent = new Intent();
             intent.setAction(action);
-            final StatusEvent event = StatusEvent.fromJSON(rawData);
+            final StatusEvent event = StatusEvent.fromJSON(context, rawData);
             if (setInternetUnavailable) {
                 event.put(StatusEvent.FIELD_CAR_NUMBER, context.getString(R.string.message_no_internet_connection));
                 event.put(StatusEvent.FIELD_DESCRIPTION, context.getString(R.string.message_connect_to_internet));

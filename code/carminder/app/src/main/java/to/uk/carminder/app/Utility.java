@@ -19,7 +19,6 @@ public class Utility {
 
     public static final String EMPTY_STRING = "";
     public static final String FIELD_DATA = "FIELD_DATA";
-    public static final String FIELD_CAR_EVENTS = "FIELD_CAR_EVENTS";
 
     private Utility() {
     }

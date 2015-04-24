@@ -77,7 +77,7 @@ public class CarEventsFragment extends Fragment implements LoaderManager.LoaderC
         boolean prefAddCalendarEvents = addEventsToCalendar();
         if (prefAddCalendarEvents != this.prefAddEventsToCalendar) {
             if (prefAddCalendarEvents) {
-                Utility.notifyUser(getActivity(), "Press on event's date to add it to calendar");
+                Utility.notifyUser(getActivity(), getString(R.string.message_press_for_actions));
             }
             this.prefAddEventsToCalendar = prefAddCalendarEvents;
             getLoaderManager().restartLoader(CAR_DETAILS_LOADER, null, this);
